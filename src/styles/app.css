@@ -61,7 +61,10 @@ button:disabled {
 /* ---------------------------------------------------------------- layout */
 
 .game-screen {
-  --board-size: min(94vw, 560px, calc(100dvh - 210px));
+  /* The board shares the leftover height with the two bars below it, and the
+     number pad is as tall as the board is wide divided by nine. Solving for
+     that keeps the whole screen filled without anything overlapping. */
+  --board-size: min(94vw, 560px, max(170px, calc((100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.9)));
   --content-width: min(94vw, 560px);
   height: 100dvh;
   padding: env(safe-area-inset-top) 10px calc(env(safe-area-inset-bottom) + 8px);
@@ -69,6 +72,7 @@ button:disabled {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
 }
@@ -117,9 +121,31 @@ button:disabled {
   gap: 4px;
 }
 
+/* the board floats in the space between the top and bottom bars */
+
+.game-board-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* the two bottom bars stay pinned to the bottom of the screen */
+
+.game-footer {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ----------------------------------------------------------------- board */
 
 .board {
+  position: relative;
   width: var(--board-size);
   height: var(--board-size);
   display: grid;
@@ -530,8 +556,11 @@ button:disabled {
 
 @media (max-height: 620px) {
   .game-screen {
-    --board-size: min(94vw, 560px, calc(100dvh - 190px));
+    --board-size: min(94vw, 560px, max(150px, calc((100dvh - 104px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.9)));
     gap: 6px;
   }
 
+  .game-footer {
+    gap: 6px;
+  }
 }

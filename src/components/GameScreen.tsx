@@ -20,6 +20,8 @@ export interface GameScreenProps {
   activeDigit: number | null;
   /** Filled cells that repeat a digit already placed in their row, column or box. */
   valueConflicts: Uint8Array;
+  /** Which of the 27 units are completely and correctly filled. */
+  completedUnits: boolean[];
   solved: boolean;
   difficulty: string;
   elapsedSeconds: number;
@@ -94,38 +96,43 @@ export function GameScreen(p: GameScreenProps) {
         onCycleTheme={p.onCycleTheme}
         onOpenSettings={() => setSettingsOpen(true)}
       />
-      <Board
-        cells={p.cells}
-        puzzle={p.puzzle}
-        selected={p.selected}
-        highlight={p.highlight}
-        noteConflicts={p.noteConflicts}
-        highlightConflicts={p.settings.highlightConflicts}
-        activeDigit={p.activeDigit}
-        valueConflicts={p.valueConflicts}
-        solved={p.solved}
-        onSelect={p.onSelect}
-      />
-      <Toolbar
-        notesMode={p.notesMode}
-        onToggleNotes={p.onToggleNotes}
-        onFillCandidates={p.onFillCandidates}
-        onErase={p.onErase}
-        onUndo={p.onUndo}
-        onRestart={p.onRestart}
-        canUndo={p.canUndo}
-        disabled={p.solved}
-      />
-      {p.solved ? (
-        <ResultBar
-          elapsedSeconds={p.elapsedSeconds}
-          mistakes={p.mistakes}
-          onNewPuzzle={p.onNewPuzzle}
-          onSameDifficulty={p.onSameDifficulty}
-        />
-      ) : (
-        <NumberPad counts={p.counts} notesMode={p.notesMode} onDigit={p.onDigit} />
-      )}
+      <div className="game-board-area">
+        <Board
+            cells={p.cells}
+            puzzle={p.puzzle}
+            selected={p.selected}
+            highlight={p.highlight}
+            noteConflicts={p.noteConflicts}
+            highlightConflicts={p.settings.highlightConflicts}
+            activeDigit={p.activeDigit}
+            valueConflicts={p.valueConflicts}
+            completedUnits={p.completedUnits}
+            solved={p.solved}
+            onSelect={p.onSelect}
+          />
+        </div>
+        <div className="game-footer">
+        <Toolbar
+            notesMode={p.notesMode}
+            onToggleNotes={p.onToggleNotes}
+            onFillCandidates={p.onFillCandidates}
+            onErase={p.onErase}
+            onUndo={p.onUndo}
+            onRestart={p.onRestart}
+            canUndo={p.canUndo}
+            disabled={p.solved}
+          />
+          {p.solved ? (
+          <ResultBar
+              elapsedSeconds={p.elapsedSeconds}
+              mistakes={p.mistakes}
+              onNewPuzzle={p.onNewPuzzle}
+              onSameDifficulty={p.onSameDifficulty}
+            />
+        ) : (
+          <NumberPad counts={p.counts} notesMode={p.notesMode} onDigit={p.onDigit} />
+        )}
+      </div>
       {settingsOpen && (
         <SettingsSheet
           settings={p.settings}
