@@ -66,8 +66,12 @@ export function Board({ cells, puzzle, selected, highlight, noteConflicts, highl
                 {Array.from({ length: 9 }, (_, n) => {
                   const set = (cell.notes & (1 << n)) !== 0;
                   const conflict = set && highlightConflicts && (noteConflicts[i] & (1 << n)) !== 0;
+                  const focused = set && activeDigit !== null && n + 1 === activeDigit;
+                  const cls = [conflict && 'pencil-conflict', focused && 'pencil-focus']
+                    .filter(Boolean)
+                    .join(' ') || undefined;
                   return (
-                    <span key={n} className={conflict ? 'pencil-conflict' : undefined}>
+                    <span key={n} className={cls}>
                       {set ? n + 1 : ''}
                     </span>
                   );

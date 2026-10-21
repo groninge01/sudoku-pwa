@@ -222,8 +222,17 @@ button:disabled {
   height: 100%;
 }
 
-/* a pencil mark that is already placed in this row, column or box */
-.pencil-grid span.pencil-conflict {
+/* a pencil mark of the digit the board is focused on */
+
+.pencil-grid span.pencil-focus {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* a pencil mark that clashes with a placed digit stays red */
+
+.pencil-grid span.pencil-conflict,
+.pencil-grid span.pencil-conflict.pencil-focus {
   color: var(--danger);
   font-weight: 700;
 }
