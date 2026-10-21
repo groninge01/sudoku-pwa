@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Settings } from '../state/settings.ts';
-import { CloseIcon } from './icons.tsx';
+import { X } from 'lucide-react';
 
 export interface SettingsSheetProps {
   settings: Settings;
@@ -45,7 +45,7 @@ export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProp
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2>Settings</h2>
           <button onClick={onClose} aria-label="Close settings">
-            <CloseIcon className="icon" />
+            <X className="icon" />
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 import type { Difficulty } from '../lib/sudoku/types.ts';
 import { DIFFICULTIES, DIFFICULTY_DESCRIPTION, DIFFICULTY_LABEL } from '../lib/sudoku/types.ts';
-import { PlayIcon } from './icons.tsx';
+import { Play } from 'lucide-react';
 
 export interface NewGameScreenProps {
   difficulty: Difficulty;
@@ -25,7 +25,7 @@ export function NewGameScreen(p: NewGameScreenProps) {
           <small>{DIFFICULTY_DESCRIPTION[d]}</small>
         </button>
       ))}
-      {p.busy ? <p>{p.progress}</p> : <button onClick={p.onStart}><PlayIcon className="icon" />Play</button>}
+      {p.busy ? <p>{p.progress}</p> : <button onClick={p.onStart}><Play className="icon" />Play</button>}
     </main>
   );
 }
