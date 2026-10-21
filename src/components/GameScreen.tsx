@@ -179,6 +179,7 @@ export function GameScreen(p: GameScreenProps) {
             onFillCandidates={p.onFillCandidates}
             onErase={p.onErase}
             onUndo={p.onUndo}
+            onRestart={() => guarded('restart', restartNow)}
             onNewGame={() => setOverlay('menu')}
             canUndo={p.canUndo}
             disabled={p.busy}

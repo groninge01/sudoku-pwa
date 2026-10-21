@@ -337,10 +337,36 @@ button:disabled {
 .toolbar {
   width: var(--board-size);
   display: grid;
-  grid-template-columns: repeat(5, var(--pad-cell));
-  justify-content: center;
+  /* mirrors the nine number pad columns so buttons can sit above digits */
+  grid-template-columns: repeat(9, 1fr);
   gap: var(--pad-gap);
   flex: 0 0 auto;
+}
+
+/* five gameplay buttons centred over digits 3-7, New game above the 9 */
+
+.toolbar button:nth-child(1) {
+  grid-column: 3;
+}
+
+.toolbar button:nth-child(2) {
+  grid-column: 4;
+}
+
+.toolbar button:nth-child(3) {
+  grid-column: 5;
+}
+
+.toolbar button:nth-child(4) {
+  grid-column: 6;
+}
+
+.toolbar button:nth-child(5) {
+  grid-column: 7;
+}
+
+.toolbar button:nth-child(6) {
+  grid-column: 9;
 }
 
 .toolbar button {

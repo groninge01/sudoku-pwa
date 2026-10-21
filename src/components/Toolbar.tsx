@@ -1,4 +1,4 @@
-import { Eraser, Grid3x3, Pencil, Plus, Undo2 } from 'lucide-react';
+import { Eraser, Grid3x3, Pencil, Plus, RotateCcw, Undo2 } from 'lucide-react';
 
 export interface ToolbarProps {
   notesMode: boolean;
@@ -6,6 +6,7 @@ export interface ToolbarProps {
   onFillCandidates(): void;
   onErase(): void;
   onUndo(): void;
+  onRestart(): void;
   onNewGame(): void;
   canUndo: boolean;
   disabled: boolean;
@@ -25,6 +26,9 @@ export function Toolbar(p: ToolbarProps) {
       </button>
       <button aria-label="Fill candidates" disabled={p.disabled} onClick={p.onFillCandidates}>
         <Grid3x3 className="icon" />
+      </button>
+      <button aria-label="Restart this puzzle" disabled={p.disabled} onClick={p.onRestart}>
+        <RotateCcw className="icon" />
       </button>
       <button aria-label="New game" disabled={p.disabled} onClick={p.onNewGame}>
         <Plus className="icon" />
