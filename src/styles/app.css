@@ -67,7 +67,7 @@ button:disabled {
   /* The board shares the leftover height with the two bars below it, and the
      number pad is as tall as the board is wide divided by nine. Solving for
      that keeps the whole screen filled without anything overlapping. */
-  --board-size: min(94vw, 560px, max(170px, calc((100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.9)));
+  --board-size: min(94vw, 560px, max(170px, calc((100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / 1.26)));
   --content-width: min(94vw, 560px);
   /* Gap between bottom-row cards; one value keeps every row aligned. */
   --pad-gap: 8px;
@@ -136,6 +136,8 @@ button:disabled {
   width: 100%;
   display: grid;
   place-items: center;
+  /* lets the board measure the space actually left for it */
+  container-type: size;
 }
 
 /* the two bottom bars stay pinned to the bottom of the screen */
@@ -153,8 +155,9 @@ button:disabled {
 
 .board {
   position: relative;
-  width: var(--board-size);
-  height: var(--board-size);
+  /* square, but never bigger than the space left between the bars */
+  width: min(var(--board-size), 100cqw, 100cqh);
+  aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
@@ -692,7 +695,7 @@ button:disabled {
 
 @media (max-height: 620px) {
   .game-screen {
-    --board-size: min(94vw, 560px, max(150px, calc((100dvh - 104px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.9)));
+    --board-size: min(94vw, 560px, max(150px, calc((100dvh - 56px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / 1.26)));
     gap: 6px;
   }
 
