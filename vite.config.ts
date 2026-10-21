@@ -20,9 +20,11 @@ export default defineConfig({
         theme_color: '#0b0f19',
         background_color: '#0b0f19',
         icons: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          // ?v=2: identical icon URLs keep an installed WebAPK from ever
+          // refetching; bump this when the artwork changes again.
+          { src: 'icons/icon-192.png?v=2', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png?v=2', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-maskable-512.png?v=2', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
