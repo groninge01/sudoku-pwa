@@ -32,13 +32,11 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(() => (readGame() ? 'game' : 'menu'));
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
-  const [progress, setProgress] = useState('');
 
   const game = useGame({ soundEffects: settings.soundEffects, autoRemoveNotes: settings.autoRemoveNotes });
   useTheme(settings.theme);
 
-  const onProgress = useCallback((text: string) => setProgress(text), []);
-  const { generate } = usePuzzleGenerator(onProgress);
+  const { generate } = usePuzzleGenerator();
 
   const updateSettings = useCallback((next: Settings) => {
     setSettings(next);
@@ -60,7 +58,6 @@ export default function App() {
       if (!levels.length || busyRef.current) return;
       busyRef.current = true;
       setBusy(true);
-      setProgress('Creating puzzle…');
       const level = levels[Math.floor(Math.random() * levels.length)];
       try {
         const result = await generate(level);
@@ -69,7 +66,6 @@ export default function App() {
       } finally {
         busyRef.current = false;
         setBusy(false);
-        setProgress('');
       }
     },
     [game, generate],
@@ -125,19 +121,29 @@ export default function App() {
     updateSettings({ ...settings, theme: next });
   }, [settings, updateSettings]);
 
+  const busyOverlay = busy ? (
+    <div className="busy-overlay" role="status" aria-label="Creating puzzle">
+      <span className="spinner" aria-hidden="true" />
+      <span className="visually-hidden">Creating puzzle…</span>
+    </div>
+  ) : null;
+
   if (screen === 'menu') {
     return (
-      <NewGameScreen
-        difficulties={difficulties}
-        onToggleDifficulty={toggleDifficulty}
-        onStart={() => void startPuzzle()}
-        busy={busy}
-        progress={progress}
-      />
+      <>
+        <NewGameScreen
+          difficulties={difficulties}
+          onToggleDifficulty={toggleDifficulty}
+          onStart={() => void startPuzzle()}
+          busy={busy}
+        />
+        {busyOverlay}
+      </>
     );
   }
 
   return (
+    <>
     <GameScreen
       cells={game.cells}
       puzzle={game.puzzle}
@@ -157,7 +163,6 @@ export default function App() {
       counts={counts}
       settings={settings}
       busy={busy}
-      progress={progress}
       onSelect={game.selectCell}
       onDigit={game.placeDigit}
       onErase={game.eraseCell}
@@ -171,5 +176,7 @@ export default function App() {
       onCycleTheme={cycleTheme}
       onChangeSettings={updateSettings}
     />
+      {busyOverlay}
+    </>
   );
 }

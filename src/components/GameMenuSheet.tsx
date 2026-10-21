@@ -24,7 +24,7 @@ export function GameMenuSheet(p: GameMenuSheetProps) {
         onClick={p.onNewPuzzle}
       >
         <RotateCcw className="icon" />
-        {p.busy ? 'Creating puzzle…' : `New ${label} puzzle`}
+        {`New ${label} puzzle`}
       </button>
       <button
         type="button"

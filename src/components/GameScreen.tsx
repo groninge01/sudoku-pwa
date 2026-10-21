@@ -41,7 +41,6 @@ export interface GameScreenProps {
   settings: Settings;
   /** True while a puzzle is being generated. */
   busy: boolean;
-  progress: string;
   onSelect(cell: number): void;
   onDigit(d: number): void;
   onErase(): void;
@@ -237,9 +236,8 @@ export function GameScreen(p: GameScreenProps) {
             disabled={!p.difficulties.length || p.busy}
             onClick={() => guarded('replace', startPuzzle)}
           >
-            {p.busy ? 'Creating puzzle…' : 'Start puzzle'}
+            Start puzzle
           </button>
-          {p.busy && p.progress ? <p className="sheet__progress">{p.progress}</p> : null}
         </Sheet>
       )}
 

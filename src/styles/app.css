@@ -61,6 +61,44 @@ button:disabled {
   flex: none;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* generation overlay: blur the page and spin */
+
+.busy-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 45%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade-in 160ms ease both;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ---------------------------------------------------------------- layout */
 
 .game-screen {
@@ -502,8 +540,7 @@ button:disabled {
   font-size: 1rem;
 }
 
-.sheet__hint,
-.sheet__progress {
+.sheet__hint {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.82rem;
@@ -663,13 +700,6 @@ button:disabled {
   text-align: center;
   color: var(--text-muted);
   font-size: 0.9rem;
-}
-
-.new-game__progress {
-  margin: 0;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.82rem;
 }
 
 /* ------------------------------------------------------------- responsive */

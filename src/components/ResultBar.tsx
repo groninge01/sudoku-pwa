@@ -25,7 +25,7 @@ export function ResultBar(p: ResultBarProps) {
         disabled={p.busy}
         onClick={p.onPlayAnother}
       >
-        {p.busy ? 'Creating puzzle…' : `Play another ${label}`}
+        {`Play another ${label}`}
       </button>
       <button
         type="button"

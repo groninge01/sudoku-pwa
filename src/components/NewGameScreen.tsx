@@ -6,7 +6,6 @@ export interface NewGameScreenProps {
   onToggleDifficulty(d: Difficulty): void;
   onStart(): void;
   busy: boolean;
-  progress: string;
 }
 
 export function NewGameScreen(p: NewGameScreenProps) {
@@ -21,9 +20,8 @@ export function NewGameScreen(p: NewGameScreenProps) {
         disabled={!p.difficulties.length || p.busy}
         onClick={p.onStart}
       >
-        {p.busy ? 'Creating puzzle…' : 'Start puzzle'}
+        Start puzzle
       </button>
-      {p.busy && p.progress ? <p className="new-game__progress">{p.progress}</p> : null}
     </main>
   );
 }
