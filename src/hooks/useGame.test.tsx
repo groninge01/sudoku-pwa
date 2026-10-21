@@ -158,6 +158,23 @@ describe('fillCandidates', () => {
       if (PUZZLE[i]) expect(result.current.cells[i].notes).toBe(0);
     }
   });
+
+  it('is undone as a single bulk move', () => {
+    const { result } = setup();
+    start(result);
+    // Give one cell a note so undo restores it too.
+    act(() => result.current.toggleNotes());
+    act(() => result.current.selectCell(2));
+    act(() => result.current.placeDigit(3));
+    const before = result.current.cells[2].notes;
+    expect(before & bit(3)).toBe(bit(3));
+    act(() => result.current.fillCandidates());
+    expect(result.current.cells[2].notes).toBe(bit(1) | bit(2) | bit(4));
+    expect(result.current.canUndo).toBe(true);
+    act(() => result.current.undo());
+    expect(result.current.cells[2].notes).toBe(before);
+    expect(result.current.cells.every((c, i) => PUZZLE[i] || c.notes === 0 || i === 2)).toBe(true);
+  });
 });
 
 describe('restart', () => {

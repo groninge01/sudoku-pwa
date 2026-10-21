@@ -209,13 +209,25 @@ export function useGame(options: UseGameOptions): GameApi {
       colMask[colOf(i)] |= m;
       boxMask[boxOf(i)] |= m;
     }
-    setCells(
-      board.map((cell, i) => {
+    const changes: [cell: number, before: CellState][] = [];
+      setCells(
+        board.map((cell, i) => {
         if (cell.value) return cell;
         const mask = 0x1ff & ~(rowMask[rowOf(i)] | colMask[colOf(i)] | boxMask[boxOf(i)]);
-        return { ...cell, notes: mask };
-      }),
-    );
+          if (mask !== cell.notes) changes.push([i, { ...cell }]);
+          return { ...cell, notes: mask };
+        }),
+      );
+    if (changes.length) {
+      const entry: HistoryEntry = {
+        cell: -1,
+        before: emptyCell(),
+        after: emptyCell(),
+        mistake: false,
+        bulk: changes,
+      };
+      setHistory((h) => [...h, entry]);
+    }
     play('note');
   }, [play]);
 
@@ -225,8 +237,10 @@ export function useGame(options: UseGameOptions): GameApi {
     setCells((c) =>
       c.map((v, i) => {
         if (i === entry.cell) return entry.before;
-        const cleared = entry.clearedNotes?.find(([cell]) => cell === i);
-        return cleared ? { ...v, notes: cleared[1] } : v;
+        const bulk = entry.bulk?.find(([cell]) => cell === i);
+        if (bulk) return bulk[1];
+          const cleared = entry.clearedNotes?.find(([cell]) => cell === i);
+          return cleared ? { ...v, notes: cleared[1] } : v;
       }),
     );
     setHistory((h) => h.slice(0, -1));

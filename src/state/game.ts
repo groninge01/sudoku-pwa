@@ -36,6 +36,11 @@ export interface HistoryEntry {
    * Older saves do not carry this; undo treats a missing list as empty.
    */
   clearedNotes?: [cell: number, notes: number][];
+  /**
+   * Bulk moves like "fill all notes" store the before-state of every cell
+   * they touched as [cell, before] pairs; one undo restores them all.
+   */
+  bulk?: [cell: number, before: CellState][];
 }
 
 const KEY = 'game';
