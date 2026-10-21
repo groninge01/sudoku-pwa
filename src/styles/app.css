@@ -193,6 +193,13 @@ button:disabled {
   background: var(--highlight-muted);
 }
 
+/* a filled cell that repeats a digit already placed in its row, column or box */
+
+.cell--conflict {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 .cell--selected {
   background: var(--accent-soft);
 }

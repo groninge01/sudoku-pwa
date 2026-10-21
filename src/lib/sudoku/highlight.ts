@@ -1,4 +1,4 @@
-import { bit, boxOf, colOf, rowOf } from './core.ts';
+import { UNITS, bit, boxOf, colOf, rowOf } from './core.ts';
 
 export type HighlightKind = 'none' | 'peer' | 'same' | 'same-peer' | 'same-line';
 
@@ -24,6 +24,33 @@ export function activeDigitFor(values: ArrayLike<number>, selected: number): num
   if (selected < 0 || selected >= values.length) return null;
   const value = values[selected];
   return value || null;
+}
+
+/**
+ * Filled cells that clash with another filled cell.
+ *
+ * Two filled cells that share a row, column or box and hold the same digit
+ * cannot both be right. Only the player's own entries are flagged: a given
+ * is by definition correct, so the clash belongs to the entry next to it.
+ */
+export function computeValueConflicts(
+  values: ArrayLike<number>,
+  givens: ArrayLike<number>,
+): Uint8Array {
+  const mask = new Uint8Array(81);
+  for (const unit of UNITS) {
+    for (const cell of unit) {
+      const digit = values[cell];
+      if (!digit || givens[cell]) continue;
+      for (const other of unit) {
+        if (other !== cell && values[other] === digit) {
+          mask[cell] = 1;
+          break;
+        }
+      }
+    }
+  }
+  return mask;
 }
 
 /**

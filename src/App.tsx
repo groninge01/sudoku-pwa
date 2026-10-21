@@ -4,7 +4,12 @@ import { NewGameScreen } from './components/NewGameScreen';
 import { useGame } from './hooks/useGame';
 import { usePuzzleGenerator } from './hooks/usePuzzleGenerator';
 import { useTheme } from './hooks/useTheme';
-import { activeDigitFor, computeHighlights, computeNoteConflicts } from './lib/sudoku/highlight.ts';
+import {
+  activeDigitFor,
+  computeHighlights,
+  computeNoteConflicts,
+  computeValueConflicts,
+} from './lib/sudoku/highlight.ts';
 import { DIFFICULTY_LABEL, type Difficulty } from './lib/sudoku/types.ts';
 import { clearGame, readGame } from './state/game.ts';
 import { readSettings, writeSettings, type Settings, type ThemePreference } from './state/settings.ts';
@@ -59,6 +64,12 @@ export default function App() {
   // Pencil marks that clash with a digit already on the board.
   const noteConflicts = useMemo(() => computeNoteConflicts(values), [values]);
 
+  // Filled cells that repeat a digit already placed in their row, column or box.
+  const valueConflicts = useMemo(
+    () => computeValueConflicts(values, game.puzzle),
+    [values, game.puzzle],
+  );
+
   // Remaining copies of each digit. Wrong entries do not count, so a digit
   // is only "complete" once all nine of its correct placements are on the board.
   const counts = useMemo(() => {
@@ -95,6 +106,7 @@ export default function App() {
       highlight={highlight}
       noteConflicts={noteConflicts}
       activeDigit={activeDigit}
+      valueConflicts={valueConflicts}
       solved={game.solved}
       difficulty={DIFFICULTY_LABEL[game.difficulty]}
       elapsedSeconds={game.elapsedSeconds}

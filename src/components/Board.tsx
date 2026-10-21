@@ -11,11 +11,13 @@ export interface BoardProps {
   highlightConflicts: boolean;
   /** The digit the board is focused on, or null when the selection is empty. */
   activeDigit: number | null;
+  /** Filled cells that repeat a digit already placed in their row, column or box. */
+  valueConflicts: Uint8Array;
   solved: boolean;
   onSelect(cell: number): void;
 }
 
-export function Board({ cells, puzzle, selected, highlight, noteConflicts, highlightConflicts, activeDigit, solved, onSelect }: BoardProps) {
+export function Board({ cells, puzzle, selected, highlight, noteConflicts, highlightConflicts, activeDigit, valueConflicts, solved, onSelect }: BoardProps) {
   return (
     <div className={`board${solved ? ' board--solved' : ''}`} role="grid" aria-label="Sudoku board">
       {cells.map((cell, i) => {
@@ -32,6 +34,7 @@ export function Board({ cells, puzzle, selected, highlight, noteConflicts, highl
           (kind === 'same' || isSame) && 'cell--same',
           kind === 'same-peer' && 'cell--same-peer',
           kind === 'same-line' && 'cell--same-line',
+          valueConflicts[i] && highlightConflicts && 'cell--conflict',
           solved && 'cell--solved',
           (i % 9 === 2 || i % 9 === 5) && 'cell--box-end',
           (Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5) && 'cell--row-end',
