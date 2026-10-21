@@ -1,0 +1,5 @@
+import { GearIcon, MonitorIcon, MoonIcon, SunIcon, WarningIcon } from './icons.tsx';
+
+export interface HeaderProps {difficulty:string;elapsedSeconds:number;mistakes:number;showTimer:boolean;theme:'light'|'dark'|'system';onCycleTheme():void;onOpenSettings():void}
+export function formatTime(s:number){const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
+export function Header(p:HeaderProps){const ThemeIcon=p.theme==='light'?SunIcon:p.theme==='dark'?MoonIcon:MonitorIcon;return <header className="game-header"><strong>{p.difficulty}</strong><span>{p.showTimer?formatTime(p.elapsedSeconds):''}</span><span className="mistakes"><WarningIcon className="icon"/>Mistakes {p.mistakes}</span><button className="icon-button" aria-label={`Theme: ${p.theme}. Click to change.`} onClick={p.onCycleTheme}><ThemeIcon className="icon"/></button><button className="icon-button" aria-label="Settings" onClick={p.onOpenSettings}><GearIcon className="icon"/></button></header>}

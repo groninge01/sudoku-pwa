@@ -1,0 +1,4 @@
+import { CandidatesIcon, EraserIcon, PencilIcon, RestartIcon, UndoIcon } from './icons.tsx';
+
+export interface ToolbarProps { notesMode:boolean; onToggleNotes():void; onFillCandidates():void; onErase():void; onUndo():void; onRestart():void; canUndo:boolean; disabled:boolean }
+export function Toolbar(p:ToolbarProps){return <div className="toolbar"><button aria-label="Undo" disabled={!p.canUndo||p.disabled} onClick={p.onUndo}><UndoIcon className="icon"/></button><button aria-label="Erase" disabled={p.disabled} onClick={p.onErase}><EraserIcon className="icon"/></button><button aria-label="Notes" aria-pressed={p.notesMode} disabled={p.disabled} onClick={p.onToggleNotes}><PencilIcon className="icon"/></button><button aria-label="Fill candidates" disabled={p.disabled} onClick={p.onFillCandidates}><CandidatesIcon className="icon"/></button><button aria-label="Restart" disabled={p.disabled} onClick={p.onRestart}><RestartIcon className="icon"/></button></div>}
