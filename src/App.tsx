@@ -91,10 +91,16 @@ export default function App() {
   // Pencil marks that clash with a digit already on the board.
   const noteConflicts = useMemo(() => computeNoteConflicts(values), [values]);
 
-  // Filled cells that repeat a digit already placed in their row, column or box.
+  // Wrong entries that repeat a digit already placed in their row, column or
+  // box. The matching correct entry is never flagged.
   const valueConflicts = useMemo(
-    () => computeValueConflicts(values, game.puzzle),
-    [values, game.puzzle],
+    () =>
+      computeValueConflicts(
+        values,
+        game.puzzle,
+        game.cells.map((c) => (c.wrong ? 1 : 0)),
+      ),
+    [values, game.puzzle, game.cells],
   );
 
   // Rows, columns and boxes that are completely and correctly filled.

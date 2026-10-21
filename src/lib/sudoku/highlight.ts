@@ -28,21 +28,23 @@ export function activeDigitFor(values: ArrayLike<number>, selected: number): num
 }
 
 /**
- * Filled cells that clash with another filled cell.
+ * Wrong entries that duplicate another digit in their row, column or box.
  *
- * Two filled cells that share a row, column or box and hold the same digit
- * cannot both be right. Only the player's own entries are flagged: a given
- * is by definition correct, so the clash belongs to the entry next to it.
+ * Two filled cells that share a unit and hold the same digit cannot both be
+ * right, so a clash always involves a wrong entry. Only that wrong entry is
+ * flagged: givens are correct by definition and a correct entry next to a
+ * mistake did nothing wrong itself.
  */
 export function computeValueConflicts(
   values: ArrayLike<number>,
   givens: ArrayLike<number>,
+  wrong: ArrayLike<number>,
 ): Uint8Array {
   const mask = new Uint8Array(81);
   for (const unit of UNITS) {
     for (const cell of unit) {
       const digit = values[cell];
-      if (!digit || givens[cell]) continue;
+      if (!digit || givens[cell] || !wrong[cell]) continue;
       for (const other of unit) {
         if (other !== cell && values[other] === digit) {
           mask[cell] = 1;

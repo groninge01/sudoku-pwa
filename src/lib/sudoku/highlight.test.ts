@@ -99,12 +99,27 @@ describe('computeHighlights', () => {
 });
 
 describe('computeValueConflicts', () => {
-  it('flags two player entries that clash', () => {
+  it('flags only the wrong entry when a duplicate pair clashes', () => {
     const values = new Int8Array(81);
     const givens = new Int8Array(81);
+    const wrong = new Uint8Array(81);
     values[0] = 7;
-    values[8] = 7; // same row, same digit — both are player entries
-    const mask = computeValueConflicts(values, givens);
+    values[8] = 7; // same row, same digit
+    wrong[8] = 1; // cell 8 is the wrong entry, cell 0 is correct
+    const mask = computeValueConflicts(values, givens, wrong);
+    expect(mask[0]).toBe(0);
+    expect(mask[8]).toBe(1);
+  });
+
+  it('flags both entries when both duplicates are wrong', () => {
+    const values = new Int8Array(81);
+    const givens = new Int8Array(81);
+    const wrong = new Uint8Array(81);
+    values[0] = 7;
+    values[8] = 7;
+    wrong[0] = 1;
+    wrong[8] = 1;
+    const mask = computeValueConflicts(values, givens, wrong);
     expect(mask[0]).toBe(1);
     expect(mask[8]).toBe(1);
   });
@@ -112,27 +127,42 @@ describe('computeValueConflicts', () => {
   it('never flags a given', () => {
     const values = Int8Array.from(EASY);
     const givens = Int8Array.from(EASY); // every filled cell is a given
-    const mask = computeValueConflicts(values, givens);
+    const wrong = new Uint8Array(81).fill(1); // even flagged wrong, givens stay clean
+    const mask = computeValueConflicts(values, givens, wrong);
     expect(mask.every((v) => v === 0)).toBe(true);
   });
 
-  it('flags only the player entry that clashes with a given', () => {
+  it('flags only the wrong player entry that clashes with a given', () => {
     const values = new Int8Array(81);
     const givens = new Int8Array(81);
+    const wrong = new Uint8Array(81);
     givens[0] = 5;
     values[0] = 5;
     values[8] = 5; // player entry in row 0 clashes with the given
-    const mask = computeValueConflicts(values, givens);
+    wrong[8] = 1;
+    const mask = computeValueConflicts(values, givens, wrong);
     expect(mask[0]).toBe(0);
     expect(mask[8]).toBe(1);
+  });
+
+  it('does not flag a correct entry even when it duplicates', () => {
+    const values = new Int8Array(81);
+    const givens = new Int8Array(81);
+    const wrong = new Uint8Array(81);
+    values[0] = 3;
+    values[8] = 3; // duplicate in row 0, but only cell 8 is wrong
+    wrong[8] = 1;
+    const mask = computeValueConflicts(values, givens, wrong);
+    expect(mask[0]).toBe(0);
   });
 
   it('ignores different digits in the same unit', () => {
     const values = new Int8Array(81);
     const givens = new Int8Array(81);
+    const wrong = new Uint8Array(81).fill(1);
     values[0] = 1;
     values[8] = 2;
-    const mask = computeValueConflicts(values, givens);
+    const mask = computeValueConflicts(values, givens, wrong);
     expect(mask.every((v) => v === 0)).toBe(true);
   });
 });
