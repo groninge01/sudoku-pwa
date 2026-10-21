@@ -66,8 +66,10 @@ button:disabled {
      that keeps the whole screen filled without anything overlapping. */
   --board-size: min(94vw, 560px, max(170px, calc((100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.9)));
   --content-width: min(94vw, 560px);
+  /* Gap between bottom-row cards; one value keeps every row aligned. */
+  --pad-gap: 8px;
   /* Width of one number pad card; the toolbar buttons use it too. */
-  --pad-cell: calc((var(--board-size) - 8 * 8px) / 9);
+  --pad-cell: calc((var(--board-size) - 8 * var(--pad-gap)) / 9);
   height: 100dvh;
   padding: env(safe-area-inset-top) 10px calc(env(safe-area-inset-bottom) + 8px);
   display: flex;
@@ -337,7 +339,7 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(5, var(--pad-cell));
   justify-content: center;
-  gap: 8px;
+  gap: var(--pad-gap);
   flex: 0 0 auto;
 }
 
@@ -362,7 +364,7 @@ button:disabled {
   width: var(--board-size);
   display: grid;
   grid-template-columns: repeat(9, 1fr);
-  gap: 8px;
+  gap: var(--pad-gap);
   flex: 0 0 auto;
 }
 
@@ -651,15 +653,11 @@ button:disabled {
 
 @media (max-width: 420px) {
   .game-screen {
-    --pad-cell: calc((var(--board-size) - 8 * 6px) / 9);
+    --pad-gap: 6px;
   }
 
   .game-header {
     font-size: 0.78rem;
-  }
-
-  .number-pad {
-    gap: 6px;
   }
 }
 
