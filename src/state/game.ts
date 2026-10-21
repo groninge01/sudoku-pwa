@@ -31,6 +31,11 @@ export interface HistoryEntry {
   after: CellState;
   /** True when the move counted as a mistake. */
   mistake: boolean;
+  /**
+   * Notes the move auto-cleared in peer cells, as [cell, notesBefore] pairs.
+   * Older saves do not carry this; undo treats a missing list as empty.
+   */
+  clearedNotes?: [cell: number, notes: number][];
 }
 
 const KEY = 'game';

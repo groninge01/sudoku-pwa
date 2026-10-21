@@ -92,9 +92,20 @@ export function useGame(options: UseGameOptions): GameApi {
     return () => window.clearInterval(id);
   }, [running]);
 
-  const push = useCallback((cell: number, before: CellState, after: CellState, mistake: boolean) => {
-    setHistory((h) => [...h, { cell, before: { ...before }, after: { ...after }, mistake }]);
-  }, []);
+  const push = useCallback(
+    (
+      cell: number,
+      before: CellState,
+      after: CellState,
+      mistake: boolean,
+      clearedNotes?: [cell: number, notes: number][],
+    ) => {
+      const entry: HistoryEntry = { cell, before: { ...before }, after: { ...after }, mistake };
+      if (clearedNotes?.length) entry.clearedNotes = clearedNotes;
+      setHistory((h) => [...h, entry]);
+    },
+    [],
+  );
 
   const selectCell = useCallback((cell: number) => {
     setSelected(cell);
@@ -132,13 +143,19 @@ export function useGame(options: UseGameOptions): GameApi {
       const next = cellsRef.current.map((c) => ({ ...c }));
       next[selected] = after;
 
+      let cleared: [cell: number, notes: number][] | undefined;
       if (autoRemoveNotes) {
-        const peers = new Set(peersOf(selected));
-        for (const peer of peers) next[peer].notes &= ~bit(digit);
+        const m = bit(digit);
+        for (const peer of peersOf(selected)) {
+          if (next[peer].notes & m) {
+            (cleared ??= []).push([peer, next[peer].notes]);
+            next[peer].notes &= ~m;
+          }
+        }
       }
 
       setCells(next);
-      push(selected, current, after, wrong);
+      push(selected, current, after, wrong, cleared);
       if (wrong) {
         setMistakes((m) => m + 1);
         play('mistake');
@@ -205,7 +222,13 @@ export function useGame(options: UseGameOptions): GameApi {
   const undo = useCallback(() => {
     const entry = history[history.length - 1];
     if (!entry) return;
-    setCells((c) => c.map((v, i) => (i === entry.cell ? entry.before : v)));
+    setCells((c) =>
+      c.map((v, i) => {
+        if (i === entry.cell) return entry.before;
+        const cleared = entry.clearedNotes?.find(([cell]) => cell === i);
+        return cleared ? { ...v, notes: cleared[1] } : v;
+      }),
+    );
     setHistory((h) => h.slice(0, -1));
     if (entry.mistake) setMistakes((m) => Math.max(0, m - 1));
     play('undo');
