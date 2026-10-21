@@ -80,6 +80,7 @@ export function Board({
           (kind === 'same' || isSame) && 'cell--same',
           kind === 'same-peer' && 'cell--same-peer',
           kind === 'same-line' && 'cell--same-line',
+          kind === 'same-box' && 'cell--same-line',
           valueConflicts[i] && highlightConflicts && 'cell--conflict',
           solved && 'cell--solved',
           (i % 9 === 2 || i % 9 === 5) && 'cell--box-end',

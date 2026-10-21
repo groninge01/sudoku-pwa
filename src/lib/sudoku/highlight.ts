@@ -1,15 +1,16 @@
 import { UNITS, bit, boxOf, colOf, rowOf } from './core.ts';
 
-export type HighlightKind = 'none' | 'peer' | 'same' | 'same-peer' | 'same-line';
+export type HighlightKind = 'none' | 'peer' | 'same' | 'same-peer' | 'same-line' | 'same-box';
 
 export interface HighlightMap {
   /** One entry per cell. */
   kinds: HighlightKind[];
   /** Cells that hold the active digit. */
   sameDigitCells: number[];
-  /** Rows and columns that contain a cell with the active digit. */
+  /** Rows, columns and boxes that contain a cell with the active digit. */
   sameDigitRows: number[];
   sameDigitCols: number[];
+  sameDigitBoxes: number[];
 }
 
 /**
@@ -57,8 +58,9 @@ export function computeValueConflicts(
  * Builds the highlight map for the current selection.
  *
  * The selected cell lights its own row, column and box. When a digit is
- * active, every cell holding that digit is marked, and the rows and columns
- * those cells sit in are marked as well, so the connections are visible.
+ * active, every cell holding that digit is marked, and the rows, columns
+ * and boxes those cells sit in are marked as well, so the connections are
+ * visible.
  */
 export function computeHighlights(
   values: ArrayLike<number>,
@@ -69,6 +71,7 @@ export function computeHighlights(
   const sameDigitCells: number[] = [];
   const sameDigitRows: number[] = [];
   const sameDigitCols: number[] = [];
+  const sameDigitBoxes: number[] = [];
 
   const peerCells = new Set<number>();
   if (selected >= 0) {
@@ -88,8 +91,10 @@ export function computeHighlights(
     for (const cell of sameDigitCells) {
       const r = rowOf(cell);
       const c = colOf(cell);
+      const b = boxOf(cell);
       if (!sameDigitRows.includes(r)) sameDigitRows.push(r);
       if (!sameDigitCols.includes(c)) sameDigitCols.push(c);
+      if (!sameDigitBoxes.includes(b)) sameDigitBoxes.push(b);
     }
   }
 
@@ -97,12 +102,14 @@ export function computeHighlights(
     const isPeer = peerCells.has(i);
     const isSame = sameDigitCells.includes(i);
     const onSameLine = sameDigitRows.includes(rowOf(i)) || sameDigitCols.includes(colOf(i));
+    const inSameBox = sameDigitBoxes.includes(boxOf(i));
     if (isSame) kinds[i] = isPeer ? 'same-peer' : 'same';
     else if (isPeer) kinds[i] = 'peer';
     else if (onSameLine) kinds[i] = 'same-line';
+    else if (inSameBox) kinds[i] = 'same-box';
   }
 
-  return { kinds, sameDigitCells, sameDigitRows, sameDigitCols };
+  return { kinds, sameDigitCells, sameDigitRows, sameDigitCols, sameDigitBoxes };
 }
 
 

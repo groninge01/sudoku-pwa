@@ -215,6 +215,8 @@ button:disabled {
   background: var(--highlight);
 }
 
+/* rows, columns and boxes that hold the focused digit */
+
 .cell--same-line {
   background: var(--highlight-muted);
 }
