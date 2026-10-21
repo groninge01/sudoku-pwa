@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { GameScreen } from './components/GameScreen';
 import { NewGameScreen } from './components/NewGameScreen';
 import { useGame } from './hooks/useGame';
@@ -11,17 +11,27 @@ import {
   computeValueConflicts,
 } from './lib/sudoku/highlight.ts';
 import { computeCompletedUnits } from './lib/sudoku/complete.ts';
-import { DIFFICULTY_LABEL, type Difficulty } from './lib/sudoku/types.ts';
-import { clearGame, readGame } from './state/game.ts';
-import { readSettings, writeSettings, type Settings, type ThemePreference } from './state/settings.ts';
+import type { Difficulty } from './lib/sudoku/types.ts';
+import { readGame } from './state/game.ts';
+import {
+  readDifficulties,
+  readSettings,
+  writeDifficulties,
+  writeSettings,
+  type Settings,
+  type ThemePreference,
+} from './state/settings.ts';
 
 type Screen = 'menu' | 'game';
 
 export default function App() {
   const [settings, setSettings] = useState<Settings>(readSettings);
-  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
+  const [difficulties, setDifficulties] = useState<Difficulty[]>(
+    () => readDifficulties<Difficulty>() as Difficulty[],
+  );
   const [screen, setScreen] = useState<Screen>(() => (readGame() ? 'game' : 'menu'));
   const [busy, setBusy] = useState(false);
+  const busyRef = useRef(false);
   const [progress, setProgress] = useState('');
 
   const game = useGame({ soundEffects: settings.soundEffects, autoRemoveNotes: settings.autoRemoveNotes });
@@ -35,22 +45,38 @@ export default function App() {
     writeSettings(next);
   }, []);
 
+  const toggleDifficulty = useCallback((d: Difficulty) => {
+    setDifficulties((current) => {
+      const next = current.includes(d) ? current.filter((x) => x !== d) : [...current, d];
+      writeDifficulties(next);
+      return next;
+    });
+  }, []);
+
+  // Generate a puzzle, then replace the game. busyRef blocks a second tap
+  // fired before React has rendered the disabled button.
   const launch = useCallback(
-    async (level: Difficulty) => {
+    async (levels: Difficulty[]) => {
+      if (!levels.length || busyRef.current) return;
+      busyRef.current = true;
       setBusy(true);
-      setProgress('Generating a puzzle…');
+      setProgress('Creating puzzle…');
+      const level = levels[Math.floor(Math.random() * levels.length)];
       try {
         const result = await generate(level);
         game.start(result.puzzle, result.solution, level);
-        setDifficulty(level);
         setScreen('game');
       } finally {
+        busyRef.current = false;
         setBusy(false);
         setProgress('');
       }
     },
     [game, generate],
   );
+
+  const startPuzzle = useCallback(() => launch(difficulties), [launch, difficulties]);
+  const playAnother = useCallback(() => launch([game.difficulty]), [launch, game.difficulty]);
 
   const values = useMemo(() => game.cells.map((c) => c.value), [game.cells]);
 
@@ -96,9 +122,9 @@ export default function App() {
   if (screen === 'menu') {
     return (
       <NewGameScreen
-        difficulty={difficulty}
-        onChangeDifficulty={setDifficulty}
-        onStart={() => void launch(difficulty)}
+        difficulties={difficulties}
+        onToggleDifficulty={toggleDifficulty}
+        onStart={() => void startPuzzle()}
         busy={busy}
         progress={progress}
       />
@@ -116,13 +142,16 @@ export default function App() {
       valueConflicts={valueConflicts}
       completedUnits={completedUnits}
       solved={game.solved}
-      difficulty={DIFFICULTY_LABEL[game.difficulty]}
+      difficulty={game.difficulty}
+      difficulties={difficulties}
       elapsedSeconds={game.elapsedSeconds}
       mistakes={game.mistakes}
       notesMode={game.notesMode}
       canUndo={game.canUndo}
       counts={counts}
       settings={settings}
+      busy={busy}
+      progress={progress}
       onSelect={game.selectCell}
       onDigit={game.placeDigit}
       onErase={game.eraseCell}
@@ -130,14 +159,10 @@ export default function App() {
       onFillCandidates={game.fillCandidates}
       onUndo={game.undo}
       onRestart={game.restart}
-      onNewGame={() => {
-        clearGame();
-        setScreen('menu');
-      }}
-      onNewPuzzle={() => void launch(game.difficulty)}
-      onSameDifficulty={() => void launch(game.difficulty)}
+      onStartPuzzle={startPuzzle}
+      onPlayAnother={playAnother}
+      onToggleDifficulty={toggleDifficulty}
       onCycleTheme={cycleTheme}
-      onOpenSettings={() => undefined}
       onChangeSettings={updateSettings}
     />
   );

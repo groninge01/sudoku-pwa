@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import type { Settings } from '../state/settings.ts';
+import { Sheet } from './Sheet.tsx';
 import { X } from 'lucide-react';
 
 export interface SettingsSheetProps {
@@ -9,14 +9,6 @@ export interface SettingsSheetProps {
 }
 
 export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProps) {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
   const toggle = (key: 'soundEffects' | 'showTimer' | 'highlightConflicts' | 'autoRemoveNotes') => (
     <label key={key}>
       {{
@@ -34,26 +26,18 @@ export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProp
   );
 
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <section
-        className="settings-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Settings"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2>Settings</h2>
-          <button onClick={onClose} aria-label="Close settings">
-            <X className="icon" />
-          </button>
-        </div>
+    <Sheet label="Settings" onClose={onClose} className="settings-sheet">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2>Settings</h2>
+        <button onClick={onClose} aria-label="Close settings">
+          <X className="icon" />
+        </button>
+      </div>
 
-        {toggle('soundEffects')}
-        {toggle('showTimer')}
-        {toggle('highlightConflicts')}
-        {toggle('autoRemoveNotes')}
-      </section>
-    </div>
+      {toggle('soundEffects')}
+      {toggle('showTimer')}
+      {toggle('highlightConflicts')}
+      {toggle('autoRemoveNotes')}
+    </Sheet>
   );
 }

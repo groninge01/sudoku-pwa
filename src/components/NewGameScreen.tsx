@@ -1,10 +1,9 @@
 import type { Difficulty } from '../lib/sudoku/types.ts';
-import { DIFFICULTIES, DIFFICULTY_DESCRIPTION, DIFFICULTY_LABEL } from '../lib/sudoku/types.ts';
-import { Play } from 'lucide-react';
+import { DifficultyPicker } from './DifficultyPicker.tsx';
 
 export interface NewGameScreenProps {
-  difficulty: Difficulty;
-  onChangeDifficulty(d: Difficulty): void;
+  difficulties: Difficulty[];
+  onToggleDifficulty(d: Difficulty): void;
   onStart(): void;
   busy: boolean;
   progress: string;
@@ -14,18 +13,17 @@ export function NewGameScreen(p: NewGameScreenProps) {
   return (
     <main className="new-game">
       <h1>Sudoku</h1>
-      {DIFFICULTIES.map((d) => (
-        <button
-          className={p.difficulty === d ? 'is-active' : ''}
-          key={d}
-          aria-pressed={p.difficulty === d}
-          onClick={() => p.onChangeDifficulty(d)}
-        >
-          <strong>{DIFFICULTY_LABEL[d]}</strong>
-          <small>{DIFFICULTY_DESCRIPTION[d]}</small>
-        </button>
-      ))}
-      {p.busy ? <p>{p.progress}</p> : <button onClick={p.onStart}><Play className="icon" />Play</button>}
+      <p className="new-game__hint">Select one or more difficulties.</p>
+      <DifficultyPicker selected={p.difficulties} onToggle={p.onToggleDifficulty} disabled={p.busy} />
+      <button
+        type="button"
+        className="button button--primary button--block"
+        disabled={!p.difficulties.length || p.busy}
+        onClick={p.onStart}
+      >
+        {p.busy ? 'Creating puzzle…' : 'Start puzzle'}
+      </button>
+      {p.busy && p.progress ? <p className="new-game__progress">{p.progress}</p> : null}
     </main>
   );
 }
