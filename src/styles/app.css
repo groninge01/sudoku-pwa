@@ -89,7 +89,8 @@ button:disabled {
   width: min(50vw, 45vh);
   height: min(50vw, 45vh);
   border-radius: 50%;
-  border: 24px solid var(--accent-soft);
+  /* Ring ~10% of diameter (Material's 1:10 spinner ratio), ≥24px on mobile. */
+  border: max(24px, calc(min(50vw, 45vh) * 0.1)) solid var(--accent-soft);
   border-top-color: var(--accent);
   animation: spin 800ms linear infinite;
 }
