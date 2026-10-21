@@ -85,11 +85,11 @@ button:disabled {
 }
 
 .spinner {
-  /* ≥75% of screen width on mobile; the vh cap keeps it inside landscape. */
-  width: min(75vw, 45vh);
-  height: min(75vw, 45vh);
+  /* 50% of screen width on mobile; the vh cap keeps it inside landscape. */
+  width: min(50vw, 45vh);
+  height: min(50vw, 45vh);
   border-radius: 50%;
-  border: 6px solid var(--accent-soft);
+  border: 24px solid var(--accent-soft);
   border-top-color: var(--accent);
   animation: spin 800ms linear infinite;
 }
