@@ -25,6 +25,9 @@ export interface BoardProps {
 /** Outlives the longest sweep: 8 cells * 55 ms stagger + 420 ms of animation. */
 const CELEBRATION_MS = 1100;
 
+/** Outlives the grid wave: 16 * 55 ms of diagonal stagger + 420 ms, plus slack. */
+const SOLVED_SWEEP_MS = 1600;
+
 /** Position of a cell on the sweep axis of a unit. */
 function sweepIndex(unit: number, cell: number): number {
   const kind = unitKind(unit);
@@ -71,6 +74,20 @@ export function Board({
     timers.current.push(timer);
   }, [signature]);
 
+  // The same light runs over the whole board diagonally when the puzzle is
+  // finished. A game that loads already solved stays quiet.
+  const wasSolved = useRef(solved);
+  const [solvedSweep, setSolvedSweep] = useState(false);
+
+  useEffect(() => {
+    const justSolved = solved && !wasSolved.current;
+    wasSolved.current = solved;
+    if (!justSolved) return;
+    setSolvedSweep(true);
+    const timer = window.setTimeout(() => setSolvedSweep(false), SOLVED_SWEEP_MS);
+    timers.current.push(timer);
+  }, [solved]);
+
   useEffect(
     () => () => {
       for (const timer of timers.current) window.clearTimeout(timer);
@@ -81,6 +98,8 @@ export function Board({
   // --sweep tells each cell where it sits on the light's path; undefined
   // means the cell is not part of a just-completed unit.
   const sweepOf = (i: number): number | undefined => {
+    // The solved wave overrides any unit sweep still running.
+    if (solvedSweep) return Math.floor(i / 9) + (i % 9);
     for (const unit of celebrating) {
       if (UNITS[unit].includes(i)) return sweepIndex(unit, i);
     }
@@ -88,7 +107,7 @@ export function Board({
   };
 
   return (
-    <div className={`board${solved ? ' board--solved' : ''}`} role="grid" aria-label="Sudoku board">
+    <div className="board" role="grid" aria-label="Sudoku board">
       {cells.map((cell, i) => {
         const given = puzzle[i] !== 0;
         const kind = highlight.kinds[i];
@@ -107,7 +126,6 @@ export function Board({
           kind === 'same-box' && 'cell--same-line',
           valueConflicts[i] && highlightConflicts && 'cell--conflict',
           sweep !== undefined && 'cell--sweep',
-          solved && 'cell--solved',
           (i % 9 === 2 || i % 9 === 5) && 'cell--box-end',
           (Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5) && 'cell--row-end',
         ]
@@ -130,7 +148,7 @@ export function Board({
             role="gridcell"
             aria-label={`Row ${Math.floor(i / 9) + 1}, column ${(i % 9) + 1},${content}`}
             className={classes}
-            style={{ ['--order' as string]: i, ['--sweep' as string]: sweep ?? 0 }}
+            style={{ ['--sweep' as string]: sweep ?? 0 }}
             key={i}
             onClick={() => onSelect(i)}
           >

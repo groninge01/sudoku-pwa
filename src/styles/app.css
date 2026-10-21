@@ -328,28 +328,6 @@ button:disabled {
   }
 }
 
-/* solved animation: a wave across the whole grid */
-
-.board--solved .cell {
-  animation: cell-pop 420ms ease both;
-  animation-delay: calc(var(--order, 0) * 8ms);
-}
-
-@keyframes cell-pop {
-  0% {
-    background: var(--accent-soft);
-    transform: scale(0.86);
-  }
-  60% {
-    background: var(--accent-soft);
-    transform: scale(1.04);
-  }
-  100% {
-    background: var(--surface);
-    transform: scale(1);
-  }
-}
-
 /* --------------------------------------------------------------- toolbar */
 
 .toolbar {
