@@ -1,18 +1,12 @@
 import { useEffect } from 'react';
-import type { Settings, ThemePreference } from '../state/settings.ts';
-import { CloseIcon, MoonIcon, MonitorIcon, SunIcon } from './icons.tsx';
+import type { Settings } from '../state/settings.ts';
+import { CloseIcon } from './icons.tsx';
 
 export interface SettingsSheetProps {
   settings: Settings;
   onChange(next: Settings): void;
   onClose(): void;
 }
-
-const THEMES: { value: ThemePreference; label: string }[] = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'system', label: 'System' },
-];
 
 export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProps) {
   useEffect(() => {
@@ -53,22 +47,6 @@ export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProp
           <button onClick={onClose} aria-label="Close settings">
             <CloseIcon className="icon" />
           </button>
-        </div>
-
-        <div>
-          <div style={{ fontSize: '0.9rem', marginBottom: '6px' }}>Theme</div>
-          <div className="theme-choice">
-            {THEMES.map((theme) => (
-              <button
-                key={theme.value}
-                className={settings.theme === theme.value ? 'is-active' : ''}
-                aria-pressed={settings.theme === theme.value}
-                onClick={() => onChange({ ...settings, theme: theme.value })}
-              >
-                {{ light: <SunIcon className="icon" />, dark: <MoonIcon className="icon" />, system: <MonitorIcon className="icon" /> }[theme.value]}{theme.label}
-              </button>
-            ))}
-          </div>
         </div>
 
         {toggle('soundEffects')}
