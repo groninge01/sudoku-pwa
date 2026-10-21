@@ -376,7 +376,7 @@ button:disabled {
   background: var(--surface-2);
   border: 1px solid transparent;
   border-radius: 12px;
-  aspect-ratio: 1;
+  aspect-ratio: 0.85;
   min-width: 0;
   min-height: 0;
 }
