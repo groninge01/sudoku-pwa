@@ -177,9 +177,13 @@ export function solveUnique(puzzle: ArrayLike<number>): Int8Array | null {
       continue;
     }
     const m = bit(v);
-    rowMask[rowOf(i)] |= m;
-    colMask[colOf(i)] |= m;
-    boxMask[boxOf(i)] |= m;
+    const r = rowOf(i);
+    const c = colOf(i);
+    const b = boxOf(i);
+    if ((rowMask[r] | colMask[c] | boxMask[b]) & m) return null;
+    rowMask[r] |= m;
+    colMask[c] |= m;
+    boxMask[b] |= m;
   }
 
   const grid = new Int8Array(81);
