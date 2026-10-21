@@ -120,12 +120,7 @@ export function GameScreen(p: GameScreenProps) {
           onSameDifficulty={p.onSameDifficulty}
         />
       ) : (
-        <NumberPad
-          counts={p.counts}
-          notesMode={p.notesMode}
-          onDigit={p.onDigit}
-          onErase={p.onErase}
-        />
+        <NumberPad counts={p.counts} notesMode={p.notesMode} onDigit={p.onDigit} />
       )}
       {settingsOpen && (
         <SettingsSheet

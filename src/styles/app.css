@@ -317,17 +317,6 @@ button:disabled {
   border-style: dashed;
 }
 
-.pad-erase {
-  grid-column: 1 / -1;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  font-size: 0.82rem;
-  padding: 6px;
-  color: var(--text-muted);
-  background: transparent;
-}
-
 /* -------------------------------------------------------------- result bar */
 
 .result-bar {
