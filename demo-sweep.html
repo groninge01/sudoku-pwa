@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Unit sweep demo</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --surface: #0f172a;
+    --surface-2: #1e293b;
+    --text: #e2e8f0;
+    --accent-soft: #1e3b6e;
+    --accent-text: #5fa4fa;
+    --grid-line: #1e3a5f;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f3f6fb;
+      --surface: #ffffff;
+      --surface-2: #e7edf6;
+      --text: #1a2433;
+      --accent-soft: #dbeafe;
+      --accent-text: #2563eb;
+      --grid-line: #9cb3d4;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 40px 16px;
+    background: var(--bg);
+    color: var(--text);
+    font: 500 16px/1.4 system-ui, sans-serif;
+  }
+  h1 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+  section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  section h2 { font-size: 0.8rem; font-weight: 500; opacity: 0.6; margin: 0; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .unit { display: grid; gap: 2px; background: var(--grid-line); padding: 2px; border-radius: 8px; }
+  .unit--row { grid-template-columns: repeat(9, 44px); }
+  .unit--col { grid-template-columns: 44px; grid-template-rows: repeat(9, 44px); }
+  .unit--box { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); }
+
+  .cell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 2px;
+  }
+  .unit--row .cell:first-child { border-radius: 6px 0 0 6px; }
+  .unit--row .cell:last-child { border-radius: 0 6px 6px 0; }
+
+  .cell--sweep {
+    z-index: 1;
+    animation: cell-sweep 420ms cubic-bezier(0.3, 0.7, 0.4, 1) calc(var(--sweep) * 55ms) both;
+  }
+  .cell--sweep::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    z-index: -1;
+    opacity: 0;
+    animation: cell-lift 420ms cubic-bezier(0.3, 0.7, 0.4, 1) calc(var(--sweep) * 55ms) both;
+  }
+  @keyframes cell-sweep {
+    0%   { background: var(--surface);   color: var(--text);        transform: translateY(0); }
+    35%  { background: var(--accent-soft); color: var(--accent-text); transform: translateY(-2px); }
+    100% { background: var(--surface);   color: var(--text);        transform: translateY(0); }
+  }
+  @keyframes cell-lift {
+    0%   { opacity: 0; transform: scale(0.9);  box-shadow: 0 0 0 rgb(0 0 0 / 0%); }
+    35%  { opacity: 1; transform: scale(1.08); box-shadow: 0 3px 10px rgb(0 0 0 / 45%); }
+    100% { opacity: 0; transform: scale(0.9);  box-shadow: 0 0 0 rgb(0 0 0 / 0%); }
+  }
+
+  button {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--grid-line);
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <h1>Completed-unit sweep</h1>
+
+  <section>
+    <h2>Row &rarr;</h2>
+    <div class="unit unit--row" data-order="row"></div>
+  </section>
+
+  <section>
+    <h2>Column &darr;</h2>
+    <div class="unit unit--col" data-order="col"></div>
+  </section>
+
+  <section>
+    <h2>Box &#8600;</h2>
+    <div class="unit unit--box" data-order="box"></div>
+  </section>
+
+  <button id="replay">Replay</button>
+
+<script>
+  const digits = [5,3,4,6,7,8,9,1,2];
+
+  function build(unit) {
+    const order = unit.dataset.order;
+    unit.textContent = '';
+    for (let i = 0; i < 9; i++) {
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.textContent = digits[i];
+      let s;
+      if (order === 'row') s = i;
+      else if (order === 'col') s = i;
+      else s = Math.floor(i / 3) + (i % 3);
+      c.style.setProperty('--sweep', s);
+      unit.appendChild(c);
+    }
+  }
+
+  function play() {
+    for (const unit of document.querySelectorAll('.unit')) {
+      build(unit);
+      for (const c of unit.children) {
+        c.classList.remove('cell--sweep');
+        void c.offsetWidth;
+        c.classList.add('cell--sweep');
+      }
+    }
+  }
+
+  document.getElementById('replay').addEventListener('click', play);
+  play();
+</script>
+</body>
+</html>
