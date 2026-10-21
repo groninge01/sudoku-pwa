@@ -335,7 +335,8 @@ button:disabled {
 .toolbar {
   width: var(--board-size);
   display: grid;
-  grid-template-columns: repeat(5, var(--pad-cell));
+  /* the "New game" button fills the space left by the square buttons */
+  grid-template-columns: repeat(4, var(--pad-cell)) 1fr;
   justify-content: center;
   gap: 8px;
   flex: 0 0 auto;
@@ -347,6 +348,14 @@ button:disabled {
   padding: 0;
   aspect-ratio: 1;
   background: var(--surface-2);
+  white-space: nowrap;
+}
+
+.toolbar .toolbar-new {
+  aspect-ratio: auto;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .toolbar button[aria-pressed='true'] {
@@ -395,32 +404,33 @@ button:disabled {
   border-style: dashed;
 }
 
-/* -------------------------------------------------------------- result bar */
+/* --------------------------------------------------------- completion card */
 
-.result-bar {
-  width: var(--content-width);
+.result-card {
+  width: var(--board-size);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   gap: 8px;
-  padding: 12px 10px;
+  padding: 14px;
   border: 1px solid var(--accent);
   border-radius: 12px;
   background: var(--accent-soft);
-  color: var(--accent-text);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
   animation: fade-in 280ms ease both;
   flex: 0 0 auto;
 }
 
-.result-bar button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--surface);
-  font-size: 0.82rem;
-  font-weight: 500;
+.result-card h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--accent-text);
+}
+
+.result-card__stats {
+  margin: 0 0 4px;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-text);
+  opacity: 0.85;
+  font-size: 0.9rem;
 }
 
 @keyframes fade-in {
@@ -446,7 +456,9 @@ button:disabled {
   animation: fade-in 160ms ease both;
 }
 
-.settings-sheet {
+/* a bottom sheet on phones, a centred dialog on wider screens */
+
+.sheet {
   width: min(100%, 520px);
   max-height: 86dvh;
   overflow-y: auto;
@@ -455,8 +467,38 @@ button:disabled {
   border: 1px solid var(--border);
   border-radius: 16px 16px 0 0;
   display: grid;
-  gap: 14px;
+  gap: 12px;
   animation: sheet-up 220ms ease both;
+}
+
+.sheet h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sheet__hint,
+.sheet__progress {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.confirm-sheet p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.sheet-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.menu-sheet__item {
+  justify-content: flex-start;
+  gap: 10px;
+  text-align: left;
 }
 
 @keyframes sheet-up {
@@ -468,9 +510,16 @@ button:disabled {
   }
 }
 
-.settings-sheet h2 {
-  margin: 0;
-  font-size: 1rem;
+@media (min-width: 560px) {
+  .sheet-backdrop {
+    place-items: center;
+  }
+
+  .sheet {
+    width: min(92vw, 440px);
+    border-radius: 16px;
+    animation: fade-in 180ms ease both;
+  }
 }
 
 .settings-sheet label {
@@ -481,19 +530,83 @@ button:disabled {
   font-size: 0.9rem;
 }
 
-.settings-sheet select {
-  font: inherit;
-  color: var(--text);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 5px 8px;
-}
-
 .settings-sheet input[type='checkbox'] {
   width: 20px;
   height: 20px;
   accent-color: var(--accent);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.button--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.button--secondary {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.button--block {
+  width: 100%;
+}
+
+/* -------------------------------------------------------- difficulty cards */
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  text-align: left;
+  min-height: 48px;
+}
+
+.difficulty-card strong {
+  font-size: 0.92rem;
+}
+
+.difficulty-card small {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.difficulty-card.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.difficulty-card.is-active small {
+  color: var(--accent-text);
+  opacity: 0.8;
 }
 
 /* -------------------------------------------------------------- new game */
@@ -503,7 +616,7 @@ button:disabled {
   display: grid;
   align-content: center;
   justify-items: stretch;
-  gap: 10px;
+  gap: 12px;
   padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
   background: var(--bg);
   color: var(--text);
@@ -512,69 +625,37 @@ button:disabled {
 }
 
 .new-game h1 {
-  margin: 0 0 4px;
+  margin: 0;
   font-size: 1.9rem;
   letter-spacing: 0.04em;
   text-align: center;
   color: var(--accent);
 }
 
-.new-game > p {
-  margin: 0;
+.new-game__hint {
+  margin: 0 0 4px;
   text-align: center;
   color: var(--text-muted);
   font-size: 0.9rem;
 }
 
-.new-game button {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  text-align: left;
-  padding: 11px 14px;
-}
-
-.new-game > button:last-child {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.new-game button strong {
-  font-size: 0.95rem;
-}
-
-.new-game small {
+.new-game__progress {
+  margin: 0;
+  text-align: center;
   color: var(--text-muted);
-  font-size: 0.76rem;
-  text-align: right;
-}
-
-.new-game button.is-active {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent-text);
-}
-
-.new-game button.is-active small {
-  color: var(--accent-text);
-  opacity: 0.85;
-}
-
-.new-game > button:last-child {
-  justify-content: center;
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 13px;
-  margin-top: 6px;
+  font-size: 0.82rem;
 }
 
 /* ------------------------------------------------------------- responsive */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 @media (max-width: 420px) {
   .game-screen {
