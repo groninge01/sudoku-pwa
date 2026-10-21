@@ -66,6 +66,8 @@ button:disabled {
      that keeps the whole screen filled without anything overlapping. */
   --board-size: min(94vw, 560px, max(170px, calc((100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.9)));
   --content-width: min(94vw, 560px);
+  /* Width of one number pad card; the toolbar buttons use it too. */
+  --pad-cell: calc((var(--board-size) - 8 * 8px) / 9);
   height: 100dvh;
   padding: env(safe-area-inset-top) 10px calc(env(safe-area-inset-bottom) + 8px);
   display: flex;
@@ -331,11 +333,10 @@ button:disabled {
 /* --------------------------------------------------------------- toolbar */
 
 .toolbar {
-  width: var(--content-width);
-  display: flex;
-  align-items: center;
+  width: var(--board-size);
+  display: grid;
+  grid-template-columns: repeat(5, var(--pad-cell));
   justify-content: center;
-  flex-wrap: wrap;
   gap: 8px;
   flex: 0 0 auto;
 }
@@ -343,9 +344,8 @@ button:disabled {
 .toolbar button {
   display: inline-grid;
   place-items: center;
-  padding: 10px;
-  min-width: 42px;
-  min-height: 42px;
+  padding: 0;
+  aspect-ratio: 1;
   background: var(--surface-2);
 }
 
@@ -577,8 +577,8 @@ button:disabled {
 /* ------------------------------------------------------------- responsive */
 
 @media (max-width: 420px) {
-  .toolbar button {
-    padding: 8px;
+  .game-screen {
+    --pad-cell: calc((var(--board-size) - 8 * 6px) / 9);
   }
 
   .game-header {
