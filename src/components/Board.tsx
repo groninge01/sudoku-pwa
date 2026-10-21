@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import type { CellState } from '../state/game.ts';
 import type { HighlightMap } from '../lib/sudoku/highlight.ts';
+import { unitBox, unitKind } from '../lib/sudoku/complete.ts';
 
 export interface BoardProps {
   cells: CellState[];
@@ -13,11 +15,55 @@ export interface BoardProps {
   activeDigit: number | null;
   /** Filled cells that repeat a digit already placed in their row, column or box. */
   valueConflicts: Uint8Array;
+  /** Which of the 27 units are completely and correctly filled. */
+  completedUnits: boolean[];
   solved: boolean;
   onSelect(cell: number): void;
 }
 
-export function Board({ cells, puzzle, selected, highlight, noteConflicts, highlightConflicts, activeDigit, valueConflicts, solved, onSelect }: BoardProps) {
+const CELEBRATION_MS = 1500;
+
+export function Board({
+  cells,
+  puzzle,
+  selected,
+  highlight,
+  noteConflicts,
+  highlightConflicts,
+  activeDigit,
+  valueConflicts,
+  completedUnits,
+  solved,
+  onSelect,
+}: BoardProps) {
+  const signature = completedUnits.map((done) => (done ? '1' : '0')).join('');
+  const previous = useRef(completedUnits);
+  const timers = useRef<number[]>([]);
+  const [celebrating, setCelebrating] = useState<number[]>([]);
+
+  // A unit that just got finished plays its sweep. Units that were already
+  // complete when the board mounted stay quiet.
+  useEffect(() => {
+    const newly: number[] = [];
+    for (let i = 0; i < completedUnits.length; i++) {
+      if (completedUnits[i] && !previous.current[i]) newly.push(i);
+    }
+    previous.current = completedUnits;
+    if (!newly.length) return;
+    setCelebrating((current) => [...current, ...newly]);
+    const timer = window.setTimeout(() => {
+      setCelebrating((current) => current.filter((unit) => !newly.includes(unit)));
+    }, CELEBRATION_MS);
+    timers.current.push(timer);
+  }, [signature]);
+
+  useEffect(
+    () => () => {
+      for (const timer of timers.current) window.clearTimeout(timer);
+    },
+    [],
+  );
+
   return (
     <div className={`board${solved ? ' board--solved' : ''}`} role="grid" aria-label="Sudoku board">
       {cells.map((cell, i) => {
@@ -84,6 +130,23 @@ export function Board({ cells, puzzle, selected, highlight, noteConflicts, highl
           </button>
         );
       })}
+      <div className="board-celebrations" aria-hidden="true">
+        {celebrating.map((unit) => {
+          const box = unitBox(unit);
+          return (
+            <span
+              key={unit}
+              className={`celebrate celebrate--${unitKind(unit)}`}
+              style={{
+                left: `${box.left * 100}%`,
+                top: `${box.top * 100}%`,
+                width: `${box.width * 100}%`,
+                height: `${box.height * 100}%`,
+              }}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

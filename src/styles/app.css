@@ -270,6 +270,90 @@ button:disabled {
   font-weight: 700;
 }
 
+/* a completed row, column or box lights up in a sweep */
+
+.board-celebrations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.celebrate {
+  position: absolute;
+  display: block;
+  background: var(--complete);
+  will-change: transform, opacity;
+}
+
+/* a row wipes in from the left, a column drops in from the top */
+
+.celebrate--row {
+  transform-origin: left center;
+  background: linear-gradient(90deg, transparent, var(--complete) 30%, var(--complete) 70%, transparent);
+  animation: sweep-x 900ms ease-out;
+}
+
+.celebrate--col {
+  transform-origin: center top;
+  background: linear-gradient(180deg, transparent, var(--complete) 30%, var(--complete) 70%, transparent);
+  animation: sweep-y 900ms ease-out;
+}
+
+/* a box fades up in place */
+
+.celebrate--box {
+  transform-origin: center;
+  background: radial-gradient(circle at center, var(--complete), transparent 70%);
+  animation: pop-in 900ms ease-out;
+}
+
+@keyframes sweep-x {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  40% {
+    opacity: 0.85;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sweep-y {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  40% {
+    opacity: 0.85;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  40% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
 /* solved animation: a wave across the whole grid */
 
 .board--solved .cell {

@@ -10,6 +10,7 @@ import {
   computeNoteConflicts,
   computeValueConflicts,
 } from './lib/sudoku/highlight.ts';
+import { computeCompletedUnits } from './lib/sudoku/complete.ts';
 import { DIFFICULTY_LABEL, type Difficulty } from './lib/sudoku/types.ts';
 import { clearGame, readGame } from './state/game.ts';
 import { readSettings, writeSettings, type Settings, type ThemePreference } from './state/settings.ts';
@@ -70,6 +71,12 @@ export default function App() {
     [values, game.puzzle],
   );
 
+  // Rows, columns and boxes that are completely and correctly filled.
+  const completedUnits = useMemo(
+    () => computeCompletedUnits(values, game.cells.map((c) => (c.wrong ? 1 : 0))),
+    [values, game.cells],
+  );
+
   // Remaining copies of each digit. Wrong entries do not count, so a digit
   // is only "complete" once all nine of its correct placements are on the board.
   const counts = useMemo(() => {
@@ -107,6 +114,7 @@ export default function App() {
       noteConflicts={noteConflicts}
       activeDigit={activeDigit}
       valueConflicts={valueConflicts}
+      completedUnits={completedUnits}
       solved={game.solved}
       difficulty={DIFFICULTY_LABEL[game.difficulty]}
       elapsedSeconds={game.elapsedSeconds}
