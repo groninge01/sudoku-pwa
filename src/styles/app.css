@@ -335,8 +335,7 @@ button:disabled {
 .toolbar {
   width: var(--board-size);
   display: grid;
-  /* the "New game" button fills the space left by the square buttons */
-  grid-template-columns: repeat(4, var(--pad-cell)) 1fr;
+  grid-template-columns: repeat(5, var(--pad-cell));
   justify-content: center;
   gap: 8px;
   flex: 0 0 auto;
@@ -348,14 +347,6 @@ button:disabled {
   padding: 0;
   aspect-ratio: 1;
   background: var(--surface-2);
-  white-space: nowrap;
-}
-
-.toolbar .toolbar-new {
-  aspect-ratio: auto;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 
 .toolbar button[aria-pressed='true'] {
