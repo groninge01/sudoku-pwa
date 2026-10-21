@@ -22,11 +22,11 @@ export interface BoardProps {
   onSelect(cell: number): void;
 }
 
-/** Outlives the longest sweep: 8 cells * 55 ms stagger + 420 ms of animation. */
-const CELEBRATION_MS = 1100;
+/** Outlives the longest sweep: 150 ms lead-in + 8 cells * 75 ms stagger + 520 ms. */
+const CELEBRATION_MS = 1400;
 
-/** Outlives the grid wave: 16 * 55 ms of diagonal stagger + 420 ms, plus slack. */
-const SOLVED_SWEEP_MS = 1600;
+/** Outlives the grid wave: 150 ms + 16 * 75 ms of diagonal stagger + 520 ms, plus slack. */
+const SOLVED_SWEEP_MS = 2000;
 
 /** Position of a cell on the sweep axis of a unit. */
 function sweepIndex(unit: number, cell: number): number {

@@ -282,8 +282,8 @@ button:disabled {
    the pop does not enlarge the digit itself. */
 
 .cell--sweep {
-  animation: cell-sweep 420ms ease-out;
-  animation-delay: calc(var(--sweep, 0) * 55ms);
+  animation: cell-sweep 520ms ease-out;
+  animation-delay: calc(150ms + var(--sweep, 0) * 75ms);
   z-index: 1;
 }
 
@@ -295,8 +295,8 @@ button:disabled {
   background: var(--accent-soft);
   z-index: -1;
   opacity: 0;
-  animation: cell-lift 420ms ease-out;
-  animation-delay: calc(var(--sweep, 0) * 55ms);
+  animation: cell-lift 520ms ease-out;
+  animation-delay: calc(150ms + var(--sweep, 0) * 75ms);
 }
 
 @keyframes cell-sweep {
