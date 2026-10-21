@@ -35,20 +35,3 @@ export function unitKind(unit: number): UnitKind {
   if (unit < BOX_UNITS_START) return 'col';
   return 'box';
 }
-
-/**
- * Where a unit sits on the board, as fractions of the board size.
- *
- * Used to place the sweep that plays when the unit is finished.
- */
-export function unitBox(unit: number): { left: number; top: number; width: number; height: number } {
-  const kind = unitKind(unit);
-  if (kind === 'row') {
-    return { left: 0, top: unit / 9, width: 1, height: 1 / 9 };
-  }
-  if (kind === 'col') {
-    return { left: (unit - COL_UNITS_START) / 9, top: 0, width: 1 / 9, height: 1 };
-  }
-  const box = unit - BOX_UNITS_START;
-  return { left: (box % 3) / 3, top: Math.floor(box / 3) / 3, width: 1 / 3, height: 1 / 3 };
-}

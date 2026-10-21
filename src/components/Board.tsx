@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CellState } from '../state/game.ts';
 import type { HighlightMap } from '../lib/sudoku/highlight.ts';
-import { unitBox, unitKind } from '../lib/sudoku/complete.ts';
+import { UNITS } from '../lib/sudoku/core.ts';
+import { unitKind } from '../lib/sudoku/complete.ts';
 
 export interface BoardProps {
   cells: CellState[];
@@ -21,7 +22,20 @@ export interface BoardProps {
   onSelect(cell: number): void;
 }
 
-const CELEBRATION_MS = 1500;
+/** Outlives the longest sweep: 8 cells * 55 ms stagger + 420 ms of animation. */
+const CELEBRATION_MS = 1100;
+
+/** Position of a cell on the sweep axis of a unit. */
+function sweepIndex(unit: number, cell: number): number {
+  const kind = unitKind(unit);
+  const row = Math.floor(cell / 9);
+  const col = cell % 9;
+  // Rows run left to right, columns top to bottom,
+  // boxes diagonally from the top left corner.
+  if (kind === 'row') return col;
+  if (kind === 'col') return row;
+  return (row % 3) + (col % 3);
+}
 
 export function Board({
   cells,
@@ -64,12 +78,22 @@ export function Board({
     [],
   );
 
+  // --sweep tells each cell where it sits on the light's path; undefined
+  // means the cell is not part of a just-completed unit.
+  const sweepOf = (i: number): number | undefined => {
+    for (const unit of celebrating) {
+      if (UNITS[unit].includes(i)) return sweepIndex(unit, i);
+    }
+    return undefined;
+  };
+
   return (
     <div className={`board${solved ? ' board--solved' : ''}`} role="grid" aria-label="Sudoku board">
       {cells.map((cell, i) => {
         const given = puzzle[i] !== 0;
         const kind = highlight.kinds[i];
         const isSame = activeDigit !== null && cell.value === activeDigit;
+        const sweep = sweepOf(i);
         const classes = [
           'cell',
           given && 'cell--given',
@@ -82,6 +106,7 @@ export function Board({
           kind === 'same-line' && 'cell--same-line',
           kind === 'same-box' && 'cell--same-line',
           valueConflicts[i] && highlightConflicts && 'cell--conflict',
+          sweep !== undefined && 'cell--sweep',
           solved && 'cell--solved',
           (i % 9 === 2 || i % 9 === 5) && 'cell--box-end',
           (Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5) && 'cell--row-end',
@@ -105,7 +130,7 @@ export function Board({
             role="gridcell"
             aria-label={`Row ${Math.floor(i / 9) + 1}, column ${(i % 9) + 1},${content}`}
             className={classes}
-            style={{ ['--order' as string]: i }}
+            style={{ ['--order' as string]: i, ['--sweep' as string]: sweep ?? 0 }}
             key={i}
             onClick={() => onSelect(i)}
           >
@@ -131,23 +156,6 @@ export function Board({
           </button>
         );
       })}
-      <div className="board-celebrations" aria-hidden="true">
-        {celebrating.map((unit) => {
-          const box = unitBox(unit);
-          return (
-            <span
-              key={unit}
-              className={`celebrate celebrate--${unitKind(unit)}`}
-              style={{
-                left: `${box.left * 100}%`,
-                top: `${box.top * 100}%`,
-                width: `${box.width * 100}%`,
-                height: `${box.height * 100}%`,
-              }}
-            />
-          );
-        })}
-      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeCompletedUnits, unitBox, unitKind } from './complete.ts';
+import { computeCompletedUnits, unitKind } from './complete.ts';
 
 const parse = (s: string): Int8Array =>
   Int8Array.from(s, (c) => (c === '.' ? 0 : Number(c)));
@@ -7,8 +7,6 @@ const parse = (s: string): Int8Array =>
 const SOLUTION = parse(
   '534678912672195348198342567859761423426853791713924856961537284287419635345286179',
 );
-
-const closeTo = (a: number, b: number) => expect(a).toBeCloseTo(b, 5);
 
 describe('computeCompletedUnits', () => {
   it('returns 27 false flags for a mostly empty board', () => {
@@ -71,28 +69,3 @@ describe('unitKind', () => {
   });
 });
 
-describe('unitBox', () => {
-  it('places a row on its band', () => {
-    const b = unitBox(4);
-    closeTo(b.left, 0);
-    closeTo(b.top, 4 / 9);
-    closeTo(b.width, 1);
-    closeTo(b.height, 1 / 9);
-  });
-
-  it('places a column on its stack', () => {
-    const b = unitBox(13); // col 4
-    closeTo(b.left, 4 / 9);
-    closeTo(b.top, 0);
-    closeTo(b.width, 1 / 9);
-    closeTo(b.height, 1);
-  });
-
-  it('places a box on its ninth of the board', () => {
-    const b = unitBox(22); // box 4 -> br 1, bc 1
-    closeTo(b.left, 1 / 3);
-    closeTo(b.top, 1 / 3);
-    closeTo(b.width, 1 / 3);
-    closeTo(b.height, 1 / 3);
-  });
-});

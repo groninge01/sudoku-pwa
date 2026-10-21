@@ -160,6 +160,7 @@ button:disabled {
 }
 
 .cell {
+  position: relative;
   aspect-ratio: 1;
   min-width: 0;
   min-height: 0;
@@ -272,86 +273,26 @@ button:disabled {
   font-weight: 700;
 }
 
-/* a completed row, column or box lights up in a sweep */
+/* a completed row, column or box: a light runs through the unit and each
+   digit pops slightly as it passes */
 
-.board-celebrations {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  border-radius: 8px;
+.cell--sweep {
+  animation: cell-sweep 420ms ease-out;
+  animation-delay: calc(var(--sweep, 0) * 55ms);
+  z-index: 1;
 }
 
-.celebrate {
-  position: absolute;
-  display: block;
-  background: var(--complete);
-  will-change: transform, opacity;
-}
-
-/* a row wipes in from the left, a column drops in from the top */
-
-.celebrate--row {
-  transform-origin: left center;
-  background: linear-gradient(90deg, transparent, var(--complete) 30%, var(--complete) 70%, transparent);
-  animation: sweep-x 900ms ease-out;
-}
-
-.celebrate--col {
-  transform-origin: center top;
-  background: linear-gradient(180deg, transparent, var(--complete) 30%, var(--complete) 70%, transparent);
-  animation: sweep-y 900ms ease-out;
-}
-
-/* a box fades up in place */
-
-.celebrate--box {
-  transform-origin: center;
-  background: radial-gradient(circle at center, var(--complete), transparent 70%);
-  animation: pop-in 900ms ease-out;
-}
-
-@keyframes sweep-x {
+@keyframes cell-sweep {
   0% {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-  40% {
-    opacity: 0.85;
-    transform: scaleX(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scaleX(1);
-  }
-}
-
-@keyframes sweep-y {
-  0% {
-    opacity: 0;
-    transform: scaleY(0);
-  }
-  40% {
-    opacity: 0.85;
-    transform: scaleY(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scaleY(1);
-  }
-}
-
-@keyframes pop-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.55);
-  }
-  40% {
-    opacity: 0.7;
+    background: var(--surface);
     transform: scale(1);
   }
+  35% {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    transform: scale(1.12);
+  }
   100% {
-    opacity: 0;
     transform: scale(1);
   }
 }
