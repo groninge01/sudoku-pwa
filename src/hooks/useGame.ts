@@ -14,7 +14,6 @@ export interface GameApi {
   solution: number[];
   cells: CellState[];
   selected: number;
-  sameDigit: number | null;
   mistakes: number;
   elapsedSeconds: number;
   notesMode: boolean;
@@ -28,7 +27,6 @@ export interface GameApi {
   fillCandidates(): void;
   undo(): void;
   restart(): void;
-  setSameDigit(digit: number | null): void;
   start(puzzle: number[], solution: number[], difficulty: Difficulty): void;
 }
 
@@ -54,7 +52,6 @@ export function useGame(options: UseGameOptions): GameApi {
   const [elapsedSeconds, setElapsedSeconds] = useState(saved?.elapsedSeconds ?? 0);
   const [notesMode, setNotesMode] = useState(saved?.notesMode ?? false);
   const [history, setHistory] = useState<HistoryEntry[]>(saved?.history ?? []);
-  const [sameDigit, setSameDigitState] = useState<number | null>(null);
   const [solved, setSolved] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>(saved?.difficulty ?? 'easy');
 
@@ -101,10 +98,6 @@ export function useGame(options: UseGameOptions): GameApi {
 
   const selectCell = useCallback((cell: number) => {
     setSelected(cell);
-  }, []);
-
-  const setSameDigit = useCallback((digit: number | null) => {
-    setSameDigitState((current) => (digit === null ? null : current === digit ? null : digit));
   }, []);
 
   /** Peers of a cell: same row, column or box. */
@@ -224,7 +217,6 @@ export function useGame(options: UseGameOptions): GameApi {
     setElapsedSeconds(0);
     setHistory([]);
     setSelected(-1);
-    setSameDigitState(null);
     setSolved(false);
   }, []);
 
@@ -237,7 +229,6 @@ export function useGame(options: UseGameOptions): GameApi {
     setMistakes(0);
     setElapsedSeconds(0);
     setHistory([]);
-    setSameDigitState(null);
     setSolved(false);
   }, []);
 
@@ -246,7 +237,6 @@ export function useGame(options: UseGameOptions): GameApi {
     solution,
     cells,
     selected,
-    sameDigit,
     mistakes,
     elapsedSeconds,
     notesMode,
@@ -260,7 +250,6 @@ export function useGame(options: UseGameOptions): GameApi {
     fillCandidates,
     undo,
     restart,
-    setSameDigit,
     start,
   };
 }

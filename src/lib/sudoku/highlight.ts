@@ -13,6 +13,20 @@ export interface HighlightMap {
 }
 
 /**
+ * The digit the board is currently focused on.
+ *
+ * It is always derived from the selected cell, never remembered separately:
+ * a cell that holds a digit focuses that digit, an empty cell focuses
+ * nothing. That keeps the highlight in step with the board after every
+ * entry, erase, undo and reload.
+ */
+export function activeDigitFor(values: ArrayLike<number>, selected: number): number | null {
+  if (selected < 0 || selected >= values.length) return null;
+  const value = values[selected];
+  return value || null;
+}
+
+/**
  * Builds the highlight map for the current selection.
  *
  * The selected cell lights its own row, column and box. When a digit is

@@ -16,7 +16,8 @@ export interface GameScreenProps {
   highlight: HighlightMap;
   /** Pencil digits that are already placed in the cell's row, column or box. */
   noteConflicts: Uint16Array;
-  sameDigit: number | null;
+  /** The digit the board is focused on, or null when the selection is empty. */
+  activeDigit: number | null;
   solved: boolean;
   difficulty: string;
   elapsedSeconds: number;
@@ -98,7 +99,7 @@ export function GameScreen(p: GameScreenProps) {
         highlight={p.highlight}
         noteConflicts={p.noteConflicts}
         highlightConflicts={p.settings.highlightConflicts}
-        sameDigit={p.sameDigit}
+        activeDigit={p.activeDigit}
         solved={p.solved}
         onSelect={p.onSelect}
       />

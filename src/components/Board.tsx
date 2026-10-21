@@ -9,18 +9,19 @@ export interface BoardProps {
   /** Pencil digits that are already placed in the cell's row, column or box. */
   noteConflicts: Uint16Array;
   highlightConflicts: boolean;
-  sameDigit: number | null;
+  /** The digit the board is focused on, or null when the selection is empty. */
+  activeDigit: number | null;
   solved: boolean;
   onSelect(cell: number): void;
 }
 
-export function Board({ cells, puzzle, selected, highlight, noteConflicts, highlightConflicts, sameDigit, solved, onSelect }: BoardProps) {
+export function Board({ cells, puzzle, selected, highlight, noteConflicts, highlightConflicts, activeDigit, solved, onSelect }: BoardProps) {
   return (
     <div className={`board${solved ? ' board--solved' : ''}`} role="grid" aria-label="Sudoku board">
       {cells.map((cell, i) => {
         const given = puzzle[i] !== 0;
         const kind = highlight.kinds[i];
-        const isSame = sameDigit !== null && cell.value === sameDigit;
+        const isSame = activeDigit !== null && cell.value === activeDigit;
         const classes = [
           'cell',
           given && 'cell--given',

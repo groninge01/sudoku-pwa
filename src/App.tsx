@@ -4,7 +4,7 @@ import { NewGameScreen } from './components/NewGameScreen';
 import { useGame } from './hooks/useGame';
 import { usePuzzleGenerator } from './hooks/usePuzzleGenerator';
 import { useTheme } from './hooks/useTheme';
-import { computeHighlights, computeNoteConflicts } from './lib/sudoku/highlight.ts';
+import { activeDigitFor, computeHighlights, computeNoteConflicts } from './lib/sudoku/highlight.ts';
 import { DIFFICULTY_LABEL, type Difficulty } from './lib/sudoku/types.ts';
 import { clearGame, readGame } from './state/game.ts';
 import { readSettings, writeSettings, type Settings, type ThemePreference } from './state/settings.ts';
@@ -48,9 +48,12 @@ export default function App() {
 
   const values = useMemo(() => game.cells.map((c) => c.value), [game.cells]);
 
+  // The focused digit always follows the selected cell.
+  const activeDigit = useMemo(() => activeDigitFor(values, game.selected), [values, game.selected]);
+
   const highlight = useMemo(
-    () => computeHighlights(values, game.selected, game.sameDigit),
-    [values, game.selected, game.sameDigit],
+    () => computeHighlights(values, game.selected, activeDigit),
+    [values, game.selected, activeDigit],
   );
 
   // Pencil marks that clash with a digit already on the board.
@@ -91,7 +94,7 @@ export default function App() {
       selected={game.selected}
       highlight={highlight}
       noteConflicts={noteConflicts}
-      sameDigit={game.sameDigit}
+      activeDigit={activeDigit}
       solved={game.solved}
       difficulty={DIFFICULTY_LABEL[game.difficulty]}
       elapsedSeconds={game.elapsedSeconds}
@@ -100,10 +103,7 @@ export default function App() {
       canUndo={game.canUndo}
       counts={counts}
       settings={settings}
-      onSelect={(cell) => {
-        game.selectCell(cell);
-        if (game.cells[cell]?.value) game.setSameDigit(game.cells[cell]!.value);
-      }}
+      onSelect={game.selectCell}
       onDigit={game.placeDigit}
       onErase={game.eraseCell}
       onToggleNotes={game.toggleNotes}
