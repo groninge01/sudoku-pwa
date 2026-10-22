@@ -122,7 +122,7 @@ export function Board({
           kind === 'peer' && 'cell--peer',
           (kind === 'same' || isSame) && 'cell--same',
           kind === 'same-peer' && 'cell--same-peer',
-          kind === 'same-line' && 'cell--same-line',
+          (kind === 'same-line' || (kind === 'none' && activeDigit !== null && cell.value !== 0 && !cell.wrong)) && 'cell--same-line',
           kind === 'same-box' && 'cell--same-line',
           valueConflicts[i] && highlightConflicts && 'cell--conflict',
           sweep !== undefined && 'cell--sweep',
