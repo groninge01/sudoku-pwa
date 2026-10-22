@@ -66,6 +66,11 @@ export const sounds = {
   note(): void {
     tone(880, 0.05, 'sine', 0.3);
   },
+  /** Tried to change a locked cell (given or a correct entry). */
+  locked(): void {
+    tone(196, 0.08, 'square', 0.3);
+    tone(147, 0.1, 'square', 0.25, 0.06);
+  },
   /** Wrong digit. */
   mistake(): void {
     tone(150, 0.22, 'sawtooth', 0.4);

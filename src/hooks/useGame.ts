@@ -127,8 +127,12 @@ export function useGame(options: UseGameOptions): GameApi {
   const placeDigit = useCallback(
     (digit: number) => {
       if (selected < 0) return;
-      if (puzzleRef.current[selected]) return;
       const current = cellsRef.current[selected];
+      // Givens and correct entries are locked; a wrong entry stays editable.
+      if (puzzleRef.current[selected] || (current.value && !current.wrong)) {
+        play('locked');
+        return;
+      }
 
       if (notesMode) {
         const after = { ...current, notes: current.notes ^ bit(digit) };
@@ -173,8 +177,11 @@ export function useGame(options: UseGameOptions): GameApi {
 
   const eraseCell = useCallback(() => {
     if (selected < 0) return;
-    if (puzzleRef.current[selected]) return;
     const current = cellsRef.current[selected];
+    if (puzzleRef.current[selected] || (current.value && !current.wrong)) {
+        play('locked');
+      return;
+    }
     if (current.value === 0 && current.notes === 0) return;
     const after = emptyCell();
     setCells((c) => c.map((v, i) => (i === selected ? after : v)));

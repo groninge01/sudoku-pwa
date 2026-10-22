@@ -69,6 +69,30 @@ describe('placeDigit', () => {
     expect(result.current.cells[0].value).toBe(5);
   });
 
+  it('locks a correct entry so it cannot be overwritten', () => {
+    const { result } = setup();
+    start(result);
+    act(() => result.current.selectCell(2));
+    act(() => result.current.placeDigit(SOLUTION[2]));
+    const digit = [1, 2, 3, 4, 5, 6, 7, 8, 9].find((d) => d !== SOLUTION[2])!;
+    act(() => result.current.placeDigit(digit));
+    expect(result.current.cells[2].value).toBe(SOLUTION[2]);
+    expect(result.current.cells[2].wrong).toBe(false);
+    expect(result.current.mistakes).toBe(0);
+    expect(result.current.canUndo).toBe(true); // only the first placement is on the stack
+  });
+
+  it('still lets a wrong entry be overwritten', () => {
+    const { result } = setup();
+    start(result);
+    act(() => result.current.selectCell(2));
+    const wrongDigit = [1, 2, 3, 4, 5, 6, 7, 8, 9].find((d) => d !== SOLUTION[2])!;
+    act(() => result.current.placeDigit(wrongDigit));
+    act(() => result.current.placeDigit(SOLUTION[2]));
+    expect(result.current.cells[2].value).toBe(SOLUTION[2]);
+    expect(result.current.cells[2].wrong).toBe(false);
+  });
+
   it('does nothing with no selection', () => {
     const { result } = setup();
     start(result);
@@ -138,13 +162,23 @@ describe('undo', () => {
 });
 
 describe('eraseCell', () => {
-  it('clears the value and notes of a user cell', () => {
+  it('clears a wrong user entry', () => {
+    const { result } = setup();
+    start(result);
+    act(() => result.current.selectCell(2));
+    const wrongDigit = [1, 2, 3, 4, 5, 6, 7, 8, 9].find((d) => d !== SOLUTION[2])!;
+    act(() => result.current.placeDigit(wrongDigit));
+    act(() => result.current.eraseCell());
+      expect(result.current.cells[2].value).toBe(0);
+  });
+
+  it('keeps a correct entry locked against erasing', () => {
     const { result } = setup();
     start(result);
     act(() => result.current.selectCell(2));
     act(() => result.current.placeDigit(SOLUTION[2]));
     act(() => result.current.eraseCell());
-    expect(result.current.cells[2].value).toBe(0);
+    expect(result.current.cells[2].value).toBe(SOLUTION[2]);
   });
 });
 
