@@ -134,11 +134,19 @@ button:disabled {
   flex: 0 0 auto;
 }
 
-.game-header strong {
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.8rem;
+.game-header__stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.game-header__level {
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
 }
 
 .game-header span {
@@ -152,10 +160,14 @@ button:disabled {
 }
 
 .game-header .icon-button {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
   padding: 6px;
   display: inline-grid;
   place-items: center;
-  background: transparent;
+  background: var(--surface-2);
+  border-color: var(--border);
 }
 
 .game-header button + button {
@@ -163,9 +175,8 @@ button:disabled {
 }
 
 .mistakes {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border-strong);
 }
 
 /* the board floats in the space between the top and bottom bars */
