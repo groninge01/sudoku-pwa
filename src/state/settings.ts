@@ -1,3 +1,4 @@
+import { DIFFICULTIES, type Difficulty } from '../lib/sudoku/types.ts';
 import { loadState, saveState } from './storage.ts';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
@@ -31,13 +32,15 @@ export function writeSettings(settings: Settings): void {
 
 const DIFFICULTY_KEY = 'difficulties';
 
-/** Difficulty cards the player picked last time, oldest selection order kept. */
-export function readDifficulties<T>(): T[] {
-  return loadState<T[]>(DIFFICULTY_KEY, []);
+/** The difficulty the player picked last time; migrates the old multi-pick list. */
+export function readDifficulty(): Difficulty | null {
+  const stored = loadState<Difficulty | Difficulty[] | null>(DIFFICULTY_KEY, null);
+  const first = Array.isArray(stored) ? stored[0] : stored;
+  return DIFFICULTIES.includes(first as Difficulty) ? (first as Difficulty) : null;
 }
 
-export function writeDifficulties<T>(difficulties: T[]): void {
-  saveState(DIFFICULTY_KEY, difficulties);
+export function writeDifficulty(difficulty: Difficulty): void {
+  saveState(DIFFICULTY_KEY, difficulty);
 }
 
 export function resolveTheme(preference: ThemePreference): ThemeMode {

@@ -31,8 +31,8 @@ export interface GameScreenProps {
   completedUnits: boolean[];
   solved: boolean;
   difficulty: Difficulty;
-  /** The difficulties currently picked for random puzzle generation. */
-  difficulties: Difficulty[];
+  /** The difficulty picked for the next generated puzzle. */
+  pickedDifficulty: Difficulty;
   elapsedSeconds: number;
   mistakes: number;
   notesMode: boolean;
@@ -48,11 +48,11 @@ export interface GameScreenProps {
   onFillCandidates(): void;
   onUndo(): void;
   onRestart(): void;
-  /** Generate a puzzle from the selected difficulties. */
+  /** Generate a puzzle at the picked difficulty. */
   onStartPuzzle(): Promise<void>;
   /** Generate another puzzle at the current difficulty. */
   onPlayAnother(): Promise<void>;
-  onToggleDifficulty(d: Difficulty): void;
+  onSelectDifficulty(d: Difficulty): void;
   onCycleTheme(): void;
   onChangeSettings(s: Settings): void;
 }
@@ -224,16 +224,16 @@ export function GameScreen(p: GameScreenProps) {
           className="difficulty-sheet"
         >
           <h2>Choose difficulties</h2>
-          <p className="sheet__hint">Select one or more difficulties.</p>
+          <p className="sheet__hint">Select a difficulty.</p>
           <DifficultyPicker
-            selected={p.difficulties}
-            onToggle={p.onToggleDifficulty}
+            selected={p.pickedDifficulty}
+            onSelect={p.onSelectDifficulty}
             disabled={p.busy}
           />
           <button
             type="button"
             className="button button--primary button--block"
-            disabled={!p.difficulties.length || p.busy}
+            disabled={p.busy}
             onClick={() => guarded('replace', startPuzzle)}
           >
             Start puzzle

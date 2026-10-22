@@ -14,9 +14,9 @@ import { computeCompletedUnits } from './lib/sudoku/complete.ts';
 import type { Difficulty } from './lib/sudoku/types.ts';
 import { readGame } from './state/game.ts';
 import {
-  readDifficulties,
+  readDifficulty,
   readSettings,
-  writeDifficulties,
+  writeDifficulty,
   writeSettings,
   type Settings,
   type ThemePreference,
@@ -26,9 +26,7 @@ type Screen = 'menu' | 'game';
 
 export default function App() {
   const [settings, setSettings] = useState<Settings>(readSettings);
-  const [difficulties, setDifficulties] = useState<Difficulty[]>(
-    () => readDifficulties<Difficulty>() as Difficulty[],
-  );
+  const [difficulty, setDifficulty] = useState<Difficulty>(() => readDifficulty() ?? 'easy');
   const [screen, setScreen] = useState<Screen>(() => (readGame() ? 'game' : 'menu'));
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
@@ -43,22 +41,18 @@ export default function App() {
     writeSettings(next);
   }, []);
 
-  const toggleDifficulty = useCallback((d: Difficulty) => {
-    setDifficulties((current) => {
-      const next = current.includes(d) ? current.filter((x) => x !== d) : [...current, d];
-      writeDifficulties(next);
-      return next;
-    });
-  }, []);
+  const selectDifficulty = useCallback((d: Difficulty) => {
+    setDifficulty(d);
+      writeDifficulty(d);
+    }, []);
 
   // Generate a puzzle, then replace the game. busyRef blocks a second tap
   // fired before React has rendered the disabled button.
   const launch = useCallback(
-    async (levels: Difficulty[]) => {
-      if (!levels.length || busyRef.current) return;
+    async (level: Difficulty) => {
+      if (busyRef.current) return;
       busyRef.current = true;
       setBusy(true);
-      const level = levels[Math.floor(Math.random() * levels.length)];
       try {
         const result = await generate(level);
         game.start(result.puzzle, result.solution, level);
@@ -71,8 +65,8 @@ export default function App() {
     [game, generate],
   );
 
-  const startPuzzle = useCallback(() => launch(difficulties), [launch, difficulties]);
-  const playAnother = useCallback(() => launch([game.difficulty]), [launch, game.difficulty]);
+  const startPuzzle = useCallback(() => launch(difficulty), [launch, difficulty]);
+  const playAnother = useCallback(() => launch(game.difficulty), [launch, game.difficulty]);
 
   const values = useMemo(() => game.cells.map((c) => c.value), [game.cells]);
 
@@ -132,8 +126,8 @@ export default function App() {
     return (
       <>
         <NewGameScreen
-          difficulties={difficulties}
-          onToggleDifficulty={toggleDifficulty}
+          difficulty={difficulty}
+          onSelectDifficulty={selectDifficulty}
           onStart={() => void startPuzzle()}
           busy={busy}
         />
@@ -155,7 +149,7 @@ export default function App() {
       completedUnits={completedUnits}
       solved={game.solved}
       difficulty={game.difficulty}
-      difficulties={difficulties}
+      pickedDifficulty={difficulty}
       elapsedSeconds={game.elapsedSeconds}
       mistakes={game.mistakes}
       notesMode={game.notesMode}
@@ -172,7 +166,7 @@ export default function App() {
       onRestart={game.restart}
       onStartPuzzle={startPuzzle}
       onPlayAnother={playAnother}
-      onToggleDifficulty={toggleDifficulty}
+      onSelectDifficulty={selectDifficulty}
       onCycleTheme={cycleTheme}
       onChangeSettings={updateSettings}
     />

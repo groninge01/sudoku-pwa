@@ -2,23 +2,24 @@ import type { Difficulty } from '../lib/sudoku/types.ts';
 import { DIFFICULTIES, DIFFICULTY_DESCRIPTION, DIFFICULTY_LABEL } from '../lib/sudoku/types.ts';
 
 export interface DifficultyPickerProps {
-  selected: Difficulty[];
-  onToggle(d: Difficulty): void;
+  selected: Difficulty;
+  onSelect(d: Difficulty): void;
   disabled?: boolean;
 }
 
-/** The six difficulty cards in a two-column grid; several may be picked. */
-export function DifficultyPicker({ selected, onToggle, disabled }: DifficultyPickerProps) {
+/** The six difficulty cards in a two-column grid; exactly one is picked. */
+export function DifficultyPicker({ selected, onSelect, disabled }: DifficultyPickerProps) {
   return (
-    <div className="difficulty-grid" role="group" aria-label="Difficulties">
+    <div className="difficulty-grid" role="radiogroup" aria-label="Difficulties">
       {DIFFICULTIES.map((d) => (
         <button
           type="button"
+          role="radio"
           key={d}
-          className={`difficulty-card${selected.includes(d) ? ' is-active' : ''}`}
-          aria-pressed={selected.includes(d)}
+          className={`difficulty-card${selected === d ? ' is-active' : ''}`}
+          aria-checked={selected === d}
           disabled={disabled}
-          onClick={() => onToggle(d)}
+          onClick={() => onSelect(d)}
         >
           <strong>{DIFFICULTY_LABEL[d]}</strong>
           <small>{DIFFICULTY_DESCRIPTION[d]}</small>
