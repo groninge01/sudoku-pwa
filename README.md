@@ -31,6 +31,14 @@ works with the network off.
 - **Installable PWA** — manifest, icons, and a service worker that precaches the
   whole app for offline use.
 
+## Pages
+
+- `index.html`: mobile-first landing page.
+- `play.html`: game, with saved progress automatically restored. Installed apps
+  launch here directly; older installations opening the root redirect here too.
+- `index.html?home`: explicit homepage link, including inside installed apps.
+  The offline cache ignores `home` so this link also works without a connection.
+
 ## Getting started
 
 ```bash

@@ -1,35 +1,66 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="A clean, offline-first sudoku game. No ads, no rewards, no limits." />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f8fa" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f19" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="apple-touch-icon" href="./icons/icon-192.png?v=2" />
-    <style>
-      /* pre-CSS background so reload never flashes white */
-      html { background: #f1f5f9; }
-      html[data-theme='dark'] { background: #0b0f19; }
-      @media (prefers-color-scheme: dark) {
-        html[data-theme='system'] { background: #0b0f19; }
-      }
-    </style>
-    <script>
-      /* apply the saved theme before first paint */
-      try {
-        var t = JSON.parse(localStorage.getItem('sudoku:settings') || '{}').theme;
-        document.documentElement.dataset.theme =
-          t === 'light' || t === 'dark' ? t : 'system';
-      } catch (e) {
-        document.documentElement.dataset.theme = 'system';
-      }
-    </script>
-    <title>Sudoku</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="description" content="Sudoku without the noise. Free, ad-free puzzles with six difficulty levels, unlimited mistakes, and offline play. No account. Just open and play." />
+<meta name="theme-color" content="#f7f9fc" />
+<meta property="og:title" content="Sudoku — just you and the grid" />
+<meta property="og:description" content="No ads. No accounts. No lives to lose. A calmer Sudoku, made for your phone. Play free, online or offline." />
+<meta property="og:type" content="website" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png?v=2" />
+<link rel="stylesheet" href="/src/styles/landing.css" />
+<title>Sudoku — Free, ad-free &amp; offline. Just you and the grid.</title>
+<script>if (!new URLSearchParams(location.search).has('home') && (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone)) location.replace('./play.html');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header wrap">
+  <a class="wordmark" href="./index.html?home" aria-label="Sudoku home"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid-3x3 lucide-grid lucide-grid-3-x-3" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg><span>sudoku<span class="brand-dot">.</span></span></a>
+  <nav aria-label="Main navigation"><a class="nav-about" href="#why">Why this Sudoku?</a><a class="nav-play" href="./play.html">Play now <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></nav>
+</header>
+<main id="main">
+<section class="hero wrap" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="eyebrow"><span></span> A LITTLE SPACE TO THINK</p>
+    <h1 id="hero-title">Just you.<br />And the <span>grid.</span></h1>
+    <p class="hero-description">Sudoku without the noise. No ads, no distractions, no lives to lose. Just a good puzzle, at your own pace.</p>
+    <a class="cta" href="./play.html">Find your focus <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a>
+    <p class="cta-note">Free to play. No account or download needed.</p>
+    <ul class="hero-promises" aria-label="Highlights"><li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg> Ad-free. Always.</li><li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg> Works offline</li></ul>
+  </div>
+  <div class="hero-visual">
+    <div class="visual-note"><span class="status-dot"></span> A quieter kind of screen time.</div>
+    <div class="game-preview" role="img" aria-label="Sudoku game preview in dark mode: a clean board, helpful highlights, and a simple number pad. Illustration, not an interactive game.">
+      <div class="preview-header"><div><span class="preview-level">Easy</span><span>04:32</span><span class="preview-mistakes">0 mistakes</span></div><span class="preview-settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg></span></div>
+      <div class="preview-board"><span class="preview-cell related matching">5</span><span class="preview-cell related">3</span><span class="preview-cell box-right related selected">4</span><span class="preview-cell related"></span><span class="preview-cell related">7</span><span class="preview-cell box-right related"></span><span class="preview-cell related"></span><span class="preview-cell related"></span><span class="preview-cell related"></span><span class="preview-cell">6</span><span class="preview-cell"></span><span class="preview-cell box-right related"></span><span class="preview-cell">1</span><span class="preview-cell">9</span><span class="preview-cell box-right matching">5</span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell box-bottom"></span><span class="preview-cell box-bottom">9</span><span class="preview-cell box-right box-bottom related">8</span><span class="preview-cell box-bottom"></span><span class="preview-cell box-bottom"></span><span class="preview-cell box-right box-bottom"></span><span class="preview-cell box-bottom"></span><span class="preview-cell box-bottom">6</span><span class="preview-cell box-bottom"></span><span class="preview-cell">8</span><span class="preview-cell"></span><span class="preview-cell box-right related"></span><span class="preview-cell"></span><span class="preview-cell">6</span><span class="preview-cell box-right"></span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell">3</span><span class="preview-cell">4</span><span class="preview-cell"></span><span class="preview-cell box-right related"></span><span class="preview-cell">8</span><span class="preview-cell"></span><span class="preview-cell box-right">3</span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell">1</span><span class="preview-cell box-bottom">7</span><span class="preview-cell box-bottom"></span><span class="preview-cell box-right box-bottom related"></span><span class="preview-cell box-bottom"></span><span class="preview-cell box-bottom">2</span><span class="preview-cell box-right box-bottom"></span><span class="preview-cell box-bottom"></span><span class="preview-cell box-bottom"></span><span class="preview-cell box-bottom">6</span><span class="preview-cell"></span><span class="preview-cell">6</span><span class="preview-cell box-right related"></span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell box-right"></span><span class="preview-cell">2</span><span class="preview-cell">8</span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell box-right related"></span><span class="preview-cell">4</span><span class="preview-cell">1</span><span class="preview-cell box-right">9</span><span class="preview-cell"></span><span class="preview-cell"></span><span class="preview-cell">5</span><span class="preview-cell"></span><span class="preview-cell matching"></span><span class="preview-cell box-right related"></span><span class="preview-cell"></span><span class="preview-cell">8</span><span class="preview-cell box-right"></span><span class="preview-cell"></span><span class="preview-cell">7</span><span class="preview-cell">9</span></div>
+      <div class="preview-toolbar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser" aria-hidden="true"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"></path><path d="m5.082 11.09 8.828 8.828"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid-3x3 lucide-grid lucide-grid-3-x-3" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg><span>+</span></div>
+      <div class="preview-pad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+    </div>
+    <p class="preview-caption">All the puzzle. None of the pressure.</p>
+  </div>
+</section>
+<div class="principles"><div class="wrap"><span>NO ADS</span><span>NO ACCOUNTS</span><span>NO MISTAKE LIMITS</span><span>JUST SUDOKU</span></div></div>
+<section class="why wrap section" id="why" aria-labelledby="why-title">
+  <div class="section-heading"><p class="eyebrow">LESS, BUT BETTER</p><h2 id="why-title">A clear head.<br />A clean board.</h2><p>We kept what makes Sudoku great.<br class="desktop-break" /> And left the rest out.</p></div>
+  <div class="features">
+    <article><span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart" aria-hidden="true"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path></svg></span><h3>Mistakes, not game overs.</h3><p>A wrong number is a chance to rethink. We count mistakes, but never cut your game short.</p></article>
+    <article><span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wifi-off" aria-hidden="true"><path d="M12 20h.01"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path><path d="M5 12.859a10 10 0 0 1 5.17-2.69"></path><path d="M19 12.859a10 10 0 0 0-2.007-1.523"></path><path d="M2 8.82a15 15 0 0 1 4.177-2.643"></path><path d="M22 8.82a15 15 0 0 0-11.288-3.764"></path><path d="m2 2 20 20"></path></svg></span><h3>Go a little offline.</h3><p>Open the game online once, then take it with you. Puzzles are generated on your device. Even in airplane mode.</p></article>
+    <article><span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg></span><h3>Easy on your eyes.</h3><p>Light, dark, or matched to your system. A thoughtful board, helpful highlights, and room to focus.</p></article>
+    <article><span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid-3x3 lucide-grid lucide-grid-3-x-3" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></span><h3>Your kind of challenge.</h3><p>Six levels, from Easy to Extreme. Pencil notes, undo, and saved progress when life interrupts.</p></article>
+  </div>
+</section>
+<section class="install-section" id="install" aria-labelledby="install-title"><div class="wrap install-layout">
+  <div><p class="eyebrow">MAKE A LITTLE ROOM</p><h2 id="install-title">Your daily pause.<br />One tap away.</h2><p>Add Sudoku to your home screen for an app-like experience. No app store needed. Installing is optional; playing isn't complicated.</p><a class="text-link" href="./play.html">Or just play in your browser <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+  <div class="install-guides">
+    <details open><summary><span><span class="guide-number">01</span> On Android</span><span class="expand">+</span></summary><div class="guide-body"><p>Open the game in Chrome. Tap the browser's <strong>⋮ menu</strong>, then <strong>Add to Home screen</strong> or <strong>Install app</strong>. Confirm, and you're ready.</p></div></details>
+    <details><summary><span><span class="guide-number">02</span> On iPhone or iPad</span><span class="expand">+</span></summary><div class="guide-body"><p>Open the game in Safari. Tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>. Enable <strong>Open as Web App</strong> if shown, then tap <strong>Add</strong>.</p></div></details>
+    <p class="install-note">Open the game online first so it can save the files needed for offline play. Your progress stays in this browser on this device.</p>
+  </div>
+</div></section>
+<section class="closing wrap section" aria-labelledby="closing-title"><span class="closing-grid"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid-3x3 lucide-grid lucide-grid-3-x-3" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></span><h2 id="closing-title">A few numbers.<br />A little more calm.</h2><p>Your next puzzle is waiting. Everything else can wait.</p><a class="cta" href="./play.html">Play Sudoku <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></section>
+</main>
+<footer class="site-footer wrap"><a class="wordmark" href="./index.html?home" aria-label="Sudoku home"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid-3x3 lucide-grid lucide-grid-3-x-3" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg><span>sudoku<span class="brand-dot">.</span></span></a><p>Made for the love of the puzzle.</p><a href="#install">Install guide <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></footer>
+</body>
 </html>

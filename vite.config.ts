@@ -1,9 +1,18 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: './',
+  build: {
+    rolldownOptions: {
+      input: {
+        landing: fileURLToPath(new URL('./index.html', import.meta.url)),
+        play: fileURLToPath(new URL('./play.html', import.meta.url)),
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
@@ -15,7 +24,8 @@ export default defineConfig({
         description: 'A clean, offline-first sudoku game. No ads, no rewards, no limits.',
         display: 'standalone',
         orientation: 'any',
-        start_url: './',
+        id: './',
+        start_url: './play.html',
         scope: './',
         theme_color: '#0b0f19',
         background_color: '#0b0f19',
@@ -28,8 +38,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        ignoreURLParametersMatching: [/^home$/, /^utm_/, /^fbclid$/],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        navigateFallback: 'index.html',
+        navigateFallback: 'play.html',
         cleanupOutdatedCaches: true,
       },
       devOptions: { enabled: false },
