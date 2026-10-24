@@ -126,11 +126,9 @@ export class GenerationTimeout extends Error {
 /**
  * Generates a puzzle graded to the requested difficulty.
  *
- * Digging removes clues one at a time. Because a puzzle's technique tier
- * never falls as clues are removed, the tier of every intermediate state is
- * known: the moment it reaches the requested tier the puzzle is captured.
- * That snapshot is what gets served, so the grade is exact rather than an
- * approximation.
+ * Every candidate is graded with the supported logical techniques. Only a
+ * uniquely solvable snapshot matching both the requested tier and clue band
+ * is returned. Exhausting the budget throws rather than mislabelling a fallback.
  */
 export function generatePuzzle(options: GenerateOptions): Puzzle {
   const { difficulty, seed = (Math.random() * 0xffffffff) >>> 0, budgetMs = 60000, onProgress } = options;
@@ -192,6 +190,5 @@ export function generatePuzzle(options: GenerateOptions): Puzzle {
     onProgress?.({ attempt, bestTier: best?.tier ?? 0, bestClues });
   }
 
-  if (best) return best;
   throw new GenerationTimeout();
 }

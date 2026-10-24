@@ -71,10 +71,14 @@ that fires is exactly the puzzle's minimum tier.
 | 5 | Master | unique rectangle, xy-wing |
 | 6 | Extreme | forcing chains |
 
-Generation works by digging clues out of a full grid one at a time. Because a
-puzzle's tier never falls as clues are removed, the generator knows the tier of
-every intermediate state — the moment the puzzle reaches the requested tier it is
-captured, with a clue-count band per difficulty:
+Generation removes clues from a full grid and grades each intermediate puzzle.
+A puzzle is accepted only if it has a unique solution, matches the requested
+technique tier, and falls within that level's clue-count band. If generation times
+out, the app offers a retry rather than serving a different level.
+
+Ratings refer to this solver's supported techniques, not a universal human rating
+or another Sudoku app's difficulty scale. Unique rectangle support is type 1.
+The clue-count bands are:
 
 | Difficulty | Tier | Clues |
 | ---------- | ---: | ----- |

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { GameScreen } from './components/GameScreen';
 import { NewGameScreen } from './components/NewGameScreen';
+import { ConfirmSheet } from './components/ConfirmSheet';
 import { useGame } from './hooks/useGame';
 import { usePuzzleGenerator } from './hooks/usePuzzleGenerator';
 import { useTheme } from './hooks/useTheme';
@@ -11,7 +12,7 @@ import {
   computeValueConflicts,
 } from './lib/sudoku/highlight.ts';
 import { computeCompletedUnits } from './lib/sudoku/complete.ts';
-import type { Difficulty } from './lib/sudoku/types.ts';
+import { DIFFICULTY_LABEL, type Difficulty } from './lib/sudoku/types.ts';
 import { readGame } from './state/game.ts';
 import {
   readDifficulty,
@@ -29,6 +30,7 @@ export default function App() {
   const [difficulty, setDifficulty] = useState<Difficulty>(() => readDifficulty() ?? 'easy');
   const [screen, setScreen] = useState<Screen>(() => (readGame() ? 'game' : 'menu'));
   const [busy, setBusy] = useState(false);
+  const [generationError, setGenerationError] = useState<Difficulty | null>(null);
   const busyRef = useRef(false);
 
   const game = useGame({ soundEffects: settings.soundEffects, autoRemoveNotes: settings.autoRemoveNotes });
@@ -53,10 +55,13 @@ export default function App() {
       if (busyRef.current) return;
       busyRef.current = true;
       setBusy(true);
+      setGenerationError(null);
       try {
         const result = await generate(level);
         game.start(result.puzzle, result.solution, level);
         setScreen('game');
+      } catch {
+        setGenerationError(level);
       } finally {
         busyRef.current = false;
         setBusy(false);
@@ -120,6 +125,15 @@ export default function App() {
       <span className="spinner" aria-hidden="true" />
       <span className="visually-hidden">Creating puzzle…</span>
     </div>
+  ) : generationError ? (
+    <ConfirmSheet
+      title="Couldn't create this puzzle"
+      body={`We couldn't create your ${DIFFICULTY_LABEL[generationError]} puzzle this time. Your current game is unchanged. Try again?`}
+      confirmLabel="Try again"
+      cancelLabel="Close"
+      onConfirm={() => void launch(generationError)}
+      onClose={() => setGenerationError(null)}
+    />
   ) : null;
 
   if (screen === 'menu') {

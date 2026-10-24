@@ -79,3 +79,4 @@ for (const [name, s] of [...stats.entries()].sort()) {
   console.log(`${name.padEnd(20)} fired=${String(s.fired).padStart(5)} unsound=${s.unsound}${flag} ${s.examples.join(' | ')}`);
 }
 console.log(bad === 0 ? 'ALL TECHNIQUES SOUND' : `${bad} UNSOUND TECHNIQUES`);
+if (bad > 0) process.exitCode = 1;
