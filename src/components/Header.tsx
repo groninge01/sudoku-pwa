@@ -6,13 +6,18 @@ export function Header(p: HeaderProps) {
   const ThemeIcon = p.theme === 'light' ? Sun : p.theme === 'dark' ? Moon : Monitor;
   return (
     <header className="game-header">
+      <a className="game-header__home" href={`${import.meta.env.BASE_URL}index.html?home`} aria-label="Sudoku home">
+        <img src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="" width="38" height="38" />
+      </a>
       <div className="game-header__stats">
         <span className="game-header__level">{p.difficulty}</span>
-        {p.showTimer && <span>{formatTime(p.elapsedSeconds)}</span>}
         <span className="mistakes">{p.mistakes} {p.mistakes === 1 ? 'mistake' : 'mistakes'}</span>
+        {p.showTimer && <span className="game-header__time">{formatTime(p.elapsedSeconds)}</span>}
       </div>
-      <button className="icon-button" aria-label={`Theme: ${p.theme}. Click to change.`} onClick={p.onCycleTheme}><ThemeIcon className="icon" /></button>
-      <button className="icon-button" aria-label="Settings" onClick={p.onOpenSettings}><Settings className="icon" /></button>
+      <div className="game-header__actions">
+        <button className="icon-button" aria-label={`Theme: ${p.theme}. Click to change.`} onClick={p.onCycleTheme}><ThemeIcon className="icon" /></button>
+        <button className="icon-button" aria-label="Settings" onClick={p.onOpenSettings}><Settings className="icon" /></button>
+      </div>
     </header>
   );
 }
