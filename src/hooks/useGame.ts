@@ -52,7 +52,7 @@ export function useGame(options: UseGameOptions): GameApi {
   const [elapsedSeconds, setElapsedSeconds] = useState(saved?.elapsedSeconds ?? 0);
   const [notesMode, setNotesMode] = useState(saved?.notesMode ?? false);
   const [history, setHistory] = useState<HistoryEntry[]>(saved?.history ?? []);
-  const [solved, setSolved] = useState(false);
+  const solved = solution.some(Boolean) && cells.every((cell, i) => cell.value === solution[i]);
   const [difficulty, setDifficulty] = useState<Difficulty>(saved?.difficulty ?? 'easy');
 
   const cellsRef = useRef(cells);
@@ -168,7 +168,6 @@ export function useGame(options: UseGameOptions): GameApi {
       }
 
       if (next.every((c, i) => c.value === solution[i])) {
-        setSolved(true);
         play('solved');
       }
     },
@@ -261,7 +260,6 @@ export function useGame(options: UseGameOptions): GameApi {
     setElapsedSeconds(0);
     setHistory([]);
     setSelected(-1);
-    setSolved(false);
   }, []);
 
   const start = useCallback((newPuzzle: number[], newSolution: number[], newDifficulty: Difficulty) => {
@@ -273,7 +271,6 @@ export function useGame(options: UseGameOptions): GameApi {
     setMistakes(0);
     setElapsedSeconds(0);
     setHistory([]);
-    setSolved(false);
   }, []);
 
   return {
