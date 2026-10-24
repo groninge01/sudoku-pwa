@@ -1,7 +1,7 @@
 import { ALL, bit, boxOf, colOf, computeCandidates, popcount, rowOf, solveUnique } from './core.ts';
 import { TIER_TECHNIQUES, type Ctx, type Deduction } from './techniques.ts';
 
-/** Deduction tiers 1..5. Tier 6 means the puzzle needs a trial (guessing). */
+/** Supported logical deductions occupy tiers 1..6; tier 7 needs further search. */
 export const MAX_DEDUCTION_TIER = 6;
 export const TRIAL_TIER = 7;
 
@@ -98,10 +98,10 @@ export function solvableWithin(puzzle: ArrayLike<number>, tier: number): boolean
 }
 
 /**
- * The exact tier the puzzle needs.
+ * Rates the puzzle against this solver's supported techniques.
  *
- * The solver always prefers the lowest tier that can make progress, so the
- * highest tier that fires while it finishes the puzzle is its minimum tier.
+ * Lower-tier deductions always run first. The highest tier used is the minimum
+ * ceiling for this deterministic solver, not a universal human difficulty score.
  */
 export function ratePuzzle(puzzle: ArrayLike<number>): number {
   const result = solveCapped(puzzle, MAX_DEDUCTION_TIER);

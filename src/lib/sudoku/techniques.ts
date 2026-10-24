@@ -91,38 +91,7 @@ const nakedPair: Technique = {
   },
 };
 
-const hiddenPair: Technique = {
-  name: 'hidden pair',
-  tier: 2,
-  find({ values, cand }) {
-    for (const unit of UNITS) {
-      for (let d1 = 1; d1 <= 9; d1++) {
-        for (let d2 = d1 + 1; d2 <= 9; d2++) {
-          const mask = bit(d1) | bit(d2);
-          const cells: number[] = [];
-          let union = 0;
-          for (const cell of unit) {
-            if (values[cell]) continue;
-            const c = cand[cell];
-            if (c === 0 || c & ~mask) continue;
-            cells.push(cell);
-            union |= c;
-          }
-          if (cells.length === 2 && union === mask) {
-            const out: Deduction[] = [];
-            for (const cell of cells) {
-              for (let d = 1; d <= 9; d++) {
-                if (!(mask & bit(d)) && cand[cell] & bit(d)) out.push({ cell, digit: d, kind: 'remove' });
-              }
-            }
-            if (out.length) return out;
-          }
-        }
-      }
-    }
-    return null;
-  },
-};
+const hiddenPair = hiddenSubset(2);
 
 const lockedCandidates: Technique = {
   name: 'locked candidates',
@@ -210,28 +179,33 @@ function nakedSubset(size: number): Technique {
 }
 
 function hiddenSubset(size: number): Technique {
+  const digitSets = digitCombos(size);
   return {
-    name: `hidden ${size === 3 ? 'triple' : 'quad'}`,
-    tier: 3,
+    name: `hidden ${size === 2 ? 'pair' : size === 3 ? 'triple' : 'quad'}`,
+    tier: size === 2 ? 2 : 3,
     find({ values, cand }) {
       for (const unit of UNITS) {
-        for (const digits of digitCombos(size)) {
+        const positions = new Uint16Array(10);
+        for (let i = 0; i < unit.length; i++) {
+          const cell = unit[i];
+          if (values[cell]) continue;
+          for (const d of digitsOf(cand[cell])) positions[d] |= 1 << i;
+        }
+        for (const digits of digitSets) {
+          if (digits.some(d => positions[d] === 0)) continue;
+          let spots = 0;
           let mask = 0;
-          for (const d of digits) mask |= bit(d);
-          const cells: number[] = [];
-          let union = 0;
-          for (const cell of unit) {
-            if (values[cell]) continue;
-            const c = cand[cell];
-            if (c === 0 || c & ~mask) continue;
-            cells.push(cell);
-            union |= c;
+          for (const d of digits) {
+            spots |= positions[d];
+            mask |= bit(d);
           }
-          if (cells.length !== size || union !== mask) continue;
+          if (popcount(spots) !== size) continue;
           const out: Deduction[] = [];
-          for (const cell of cells) {
-            for (let d = 1; d <= 9; d++) {
-              if (!(mask & bit(d)) && cand[cell] & bit(d)) out.push({ cell, digit: d, kind: 'remove' });
+          for (let i = 0; i < unit.length; i++) {
+            if (!(spots & (1 << i))) continue;
+            const cell = unit[i];
+            for (const d of digitsOf(cand[cell] & ~mask)) {
+              out.push({ cell, digit: d, kind: 'remove' });
             }
           }
           if (out.length) return out;
@@ -308,9 +282,9 @@ const swordfish: Technique = {
       const m = bit(d);
       for (const trio of rowTriples()) {
         const sets = trio.map((row) => candidateCols(row, values, cand, m));
-        if (sets.some((s) => s.length !== 3)) continue;
-        if (!sameSet(sets[0], sets[1]) || !sameSet(sets[0], sets[2])) continue;
-        const cols = sets[0];
+        if (sets.some((s) => s.length < 2 || s.length > 3)) continue;
+        const cols = [...new Set(sets.flat())];
+        if (cols.length !== 3) continue;
         const out: Deduction[] = [];
         for (const row of ROW_UNITS) {
           if (trio.includes(row)) continue;
@@ -324,9 +298,9 @@ const swordfish: Technique = {
       }
       for (const trio of colTriples()) {
         const sets = trio.map((col) => candidateRows(col, values, cand, m));
-        if (sets.some((s) => s.length !== 3)) continue;
-        if (!sameSet(sets[0], sets[1]) || !sameSet(sets[0], sets[2])) continue;
-        const rows = sets[0];
+        if (sets.some((s) => s.length < 2 || s.length > 3)) continue;
+        const rows = [...new Set(sets.flat())];
+        if (rows.length !== 3) continue;
         const out: Deduction[] = [];
         for (const col of COL_UNITS) {
           if (trio.includes(col)) continue;
@@ -346,52 +320,31 @@ const swordfish: Technique = {
 /* ------------------------------------------------------------------ tier 5 */
 
 /**
- * Unique rectangle.
+ * Unique rectangle, type 1 (requires a uniquely solvable puzzle).
  *
- * Four cells in a 2x2 rectangle inside one box, limited to a pair of digits
- * {d1, d2}, with the pair appearing nowhere else in the two rows and the two
- * columns. One of the four corners must take a digit it cannot hold, so the
- * digit can be removed from that corner.
+ * Three corners in two boxes have the same candidate pair. The fourth must
+ * use a different digit; otherwise the pair could be swapped around the
+ * rectangle to produce a second solution.
  */
 const uniqueRectangle: Technique = {
   name: 'unique rectangle',
   tier: 5,
   find({ values, cand }) {
-    for (const box of BOX_UNITS) {
-      for (let r1 = 0; r1 < 3; r1++) {
-        for (let r2 = r1 + 1; r2 < 3; r2++) {
-          for (let c1 = 0; c1 < 3; c1++) {
-            for (let c2 = c1 + 1; c2 < 3; c2++) {
-              const corners = [box[r1 * 3 + c1], box[r1 * 3 + c2], box[r2 * 3 + c1], box[r2 * 3 + c2]];
-              if (corners.some((cell) => values[cell])) continue;
-              for (let d1 = 1; d1 <= 9; d1++) {
-                for (let d2 = d1 + 1; d2 <= 9; d2++) {
-                  const mask = bit(d1) | bit(d2);
-                  if (corners.some((cell) => cand[cell] & ~mask)) continue;
-                  let outside = false;
-                  for (const r of [r1, r2]) {
-                    for (let c = 0; c < 9; c++) {
-                      const cell = r * 9 + c;
-                      if (corners.includes(cell)) continue;
-                      if (cand[cell] & mask) outside = true;
-                    }
-                  }
-                  for (const c of [c1, c2]) {
-                    for (let r = 0; r < 9; r++) {
-                      const cell = r * 9 + c;
-                      if (corners.includes(cell)) continue;
-                      if (cand[cell] & mask) outside = true;
-                    }
-                  }
-                  if (outside) continue;
-                  for (const cell of corners) {
-                    const has1 = (cand[cell] & bit(d1)) !== 0;
-                    const has2 = (cand[cell] & bit(d2)) !== 0;
-                    if (has1 && !has2) return remove(cell, d2);
-                    if (has2 && !has1) return remove(cell, d1);
-                  }
-                }
-              }
+    for (let r1 = 0; r1 < 8; r1++) {
+      for (let r2 = r1 + 1; r2 < 9; r2++) {
+        for (let c1 = 0; c1 < 8; c1++) {
+          for (let c2 = c1 + 1; c2 < 9; c2++) {
+            // A deadly rectangle must span exactly two boxes, not one or four.
+            if ((Math.floor(r1 / 3) === Math.floor(r2 / 3)) ===
+                (Math.floor(c1 / 3) === Math.floor(c2 / 3))) continue;
+            const corners = [r1 * 9 + c1, r1 * 9 + c2, r2 * 9 + c1, r2 * 9 + c2];
+            if (corners.some(cell => values[cell])) continue;
+            for (const roof of corners) {
+              const floors = corners.filter(cell => cell !== roof);
+              const pair = cand[floors[0]];
+              if (popcount(pair) !== 2 || floors.some(cell => cand[cell] !== pair)) continue;
+              if ((cand[roof] & pair) !== pair || !(cand[roof] & ~pair)) continue;
+              return digitsOf(pair).map(digit => ({ cell: roof, digit, kind: 'remove' }));
             }
           }
         }
@@ -561,21 +514,7 @@ function combinations(n: number, k: number): number[][] {
 }
 
 function digitCombos(k: number): number[][] {
-  const out: number[][] = [];
-  const idx: number[] = [];
-  const walk = (start: number) => {
-    if (idx.length === k) {
-      out.push([...idx]);
-      return;
-    }
-    for (let i = start; i <= 9 - (k - idx.length); i++) {
-      idx.push(i);
-      walk(i + 1);
-      idx.pop();
-    }
-  };
-  walk(1);
-  return out;
+  return combinations(9, k).map(combo => combo.map(i => i + 1));
 }
 
 function candidateCols(unit: number[], values: Int8Array, cand: Uint16Array, m: number): number[] {
@@ -596,11 +535,7 @@ function candidateRows(unit: number[], values: Int8Array, cand: Uint16Array, m: 
   return out;
 }
 
-function sameSet(a: number[], b: number[]): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-}
+
 
 function rowTriples(): number[][][] {
   const out: number[][][] = [];
